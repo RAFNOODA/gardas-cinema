@@ -1,95 +1,109 @@
-<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gardaş Cinema - Premium Player</title>
-    <!-- Modern Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Plyr CSS -->
+    <title>Gardaş Cinema</title>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
         :root {
             --plyr-color-main: #e50914; /* Netflix Kırmızısı */
-            --bg-color: #0f0f0f;
-            --card-bg: #1f1f1f;
-            --text-color: #ffffff;
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+        body { 
+            background-color: #0f0f0f; 
+            color: white; 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px; 
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
-
-        h1 {
-            color: var(--plyr-color-main);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+        h1 { 
+            color: #e50914; 
+            margin-bottom: 25px;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
-
-        /* Player Container */
-        .video-container {
-            width: 100%;
-            max-width: 900px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        
+        /* Video Alanı */
+        .video-container { 
+            width: 100%; 
+            max-width: 850px; 
+            margin: 0 auto 30px; 
+            border: 2px solid #2b2b2b; 
+            border-radius: 12px; 
+            overflow: hidden; 
             background: #000;
-            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        
+        /* Liste Tasarımı */
+        #movieList { 
+            list-style: none; 
+            padding: 0; 
+            max-width: 700px; 
+            margin: 0 auto; 
+            text-align: left; 
+        }
+        .movie-item { 
+            background: #1f1f1f; 
+            margin: 12px 0; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-left: 5px solid #e50914; 
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .movie-item:hover {
+            transform: translateY(-2px);
+            background: #262626;
+        }
+        .movie-info { 
+            flex-grow: 1; 
+            padding-right: 15px;
+        }
+        .movie-name { 
+            font-weight: bold; 
+            font-size: 18px; 
+            display: block; 
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .movie-meta { 
+            font-size: 13px; 
+            color: #aaa; 
+        }
+        
+        /* Oynat Butonu */
+        .play-btn { 
+            background: #e50914; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+        .play-btn:hover { 
+            background: #b20710; 
         }
 
-        /* Film Kartları Alanı */
-        .movie-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1100px;
+        /* Responsive ayarlar */
+        @media (max-width: 600px) {
+            .movie-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .play-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
-
-        .movie-card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: transform 0.3s ease, border 0.3s ease;
-            border: 2px solid transparent;
-            text-align: center;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-50px);
-            border-color: var(--plyr-color-main);
-        }
-
-        .movie-card img {
-            width: 100%;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-
-        .movie-card h3 {
-            margin: 10px 0 5px;
-            font-size: 16px;
-        }
-
-        .movie-card p {
-            font-size: 12px;
-            color: #aaa;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f0f0f; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--plyr-color-main); }
     </style>
 </head>
 <body>
@@ -97,73 +111,77 @@
     <h1>GARDAŞ CINEMA</h1>
 
     <div class="video-container">
-        <video id="player" playsinline controls data-poster="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1000&q=80">
+        <video id="player" playsinline controls>
             <source src="" type="video/mp4" />
         </video>
     </div>
 
-    <div class="movie-grid" id="movieList">
-        <!-- Filmler Buraya Gelecek -->
-    </div>
+    <ul id="movieList">
+        <li>Filmler yükleniyor gardaş, bekle...</li>
+    </ul>
 
-    <!-- Plyr JS -->
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
     <script>
-        // Player'ı Başlat
+        // Oynatıcıyı tüm gelişmiş özellikleriyle başlatıyoruz
         const player = new Plyr('#player', {
-            controls: ['play-large', 'restart', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+            controls: ['play-large', 'restart', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
             tooltips: { controls: true, seek: true },
             speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
         });
 
-        // Drive Linkini Direct Linke Çeviren Fonksiyon
-        function getDirectLink(url) {
-            if (url.includes('drive.google.com')) {
-                const id = url.split('/d/')[1]?.split('/')[0] || url.split('id=')[1]?.split('&')[0];
-                return `https://docs.google.com/get_video_info?docid=${id}`; 
-                // Not: Bazı durumlarda doğrudan proxy gerekebilir, en stabil halini otomasyon halledecek.
+        // Sayfa açıldığında filmleri yükle
+        async function loadMovies() {
+            try {
+                // Ön belleği engellemek için küçük bir zaman damgası ekleyerek çekiyoruz
+                const response = await fetch('./film.json?v=' + Date.now());
+                const movies = await response.json();
+                const listContainer = document.getElementById('movieList');
+                listContainer.innerHTML = ''; 
+
+                if (movies.length === 0) {
+                    listContainer.innerHTML = '<li>Listenizde henüz film yok gardaş.</li>';
+                    return;
+                }
+
+                movies.forEach(movie => {
+                    const li = document.createElement('li');
+                    li.className = 'movie-item';
+                    
+                    // Verilerin güvenli gelmesi için fallback (varsayılan değer) ekledik
+                    const yil = movie.yil || 'Belirtilmedi';
+                    const puan = movie.puan || '-';
+
+                    li.innerHTML = `
+                        <div class="movie-info">
+                            <span class="movie-name">${movie.isim}</span>
+                            <span class="movie-meta">${yil} | ⭐ ${puan} IMDB</span>
+                        </div>
+                        <button class="play-btn" onclick="playMovie('${movie.link}', '${movie.isim.replace(/'/g, "\\'")}')">Oynat</button>
+                    `;
+                    listContainer.appendChild(li);
+                });
+            } catch (error) {
+                document.getElementById('movieList').innerHTML = '<li>Gardaş bir hata oldu, film.json dosyası yerinde mi bak hele.</li>';
+                console.error("Film yükleme hatası:", error);
             }
-            return url;
         }
 
-        // Listeden Film Seçme
-        function playMovie(url, title, poster) {
-            const videoElement = document.querySelector('#player');
-            videoElement.src = url;
+        // Film oynatma fonksiyonu
+        function playMovie(url, title) {
             player.source = {
                 type: 'video',
                 title: title,
-                sources: [{ src: url, type: 'video/mp4' }],
-                poster: poster
+                sources: [{ src: url, type: 'video/mp4' }]
             };
             player.play();
+            // Videonun olduğu en tepeye yumuşakça kaydır
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // film.json Verilerini Çek ve Listele
-        async function loadMovies() {
-            try {
-                const response = await fetch('film.json');
-                const movies = await response.json();
-                const listContainer = document.getElementById('movieList');
-
-                movies.forEach(movie => {
-                    const card = document.createElement('div');
-                    card.className = 'movie-card';
-                    card.innerHTML = `
-                        <img src="${movie.poster || 'https://via.placeholder.com/200x300?text=Film+Afisi'}" alt="${movie.isim}">
-                        <h3>${movie.isim}</h3>
-                        <p>${movie.yil || 'Belirtilmedi'} | ${movie.puan || '-'} IMDB</p>
-                    `;
-                    card.onclick = () => playMovie(movie.link, movie.isim, movie.poster);
-                    listContainer.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Filmler yüklenemedi:", error);
-            }
         }
 
         loadMovies();
     </script>
 </body>
-</html>
+</html>"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
