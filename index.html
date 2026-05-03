@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gardaş Cinema - Premium</title>
+    <!-- Plyr Modern Player CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
-        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; }
+        :root { 
+            --red: #E50914; 
+            --bg: #141414; 
+            --card-bg: #1a1a1a; 
+            --plyr-color-main: #E50914; /* Player rengini sitemizle uyumlu yaptık */
+        }
         body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
         .section-title { font-size: 26px; border-left: 5px solid var(--red); padding-left: 15px; margin: 40px 0 20px; text-transform: uppercase; letter-spacing: 1px; }
@@ -23,7 +30,7 @@
         /* Detay Modalı */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 1000; overflow-y: auto; }
         .modal-content { max-width: 950px; margin: 50px auto; background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; display: flex; gap: 30px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,1); }
-        .close { position: absolute; top: 15px; right: 25px; font-size: 35px; cursor: pointer; color: #777; transition: 0.3s; }
+        .close { position: absolute; top: 15px; right: 25px; font-size: 35px; cursor: pointer; color: #777; transition: 0.3s; z-index: 1001; }
         .close:hover { color: white; }
         
         .detay-afis { width: 300px; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
@@ -37,14 +44,16 @@
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 5px; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .bolum-item:hover { background: var(--red); }
         
-        iframe { width: 100%; height: 85vh; border: none; border-radius: 10px; }
+        /* Modern Player Konteyneri */
+        .player-wrapper { width: 100%; max-width: 1000px; margin: 5% auto; position: relative; }
+        .plyr__video-embed { border-radius: 10px; overflow: hidden; }
     </style>
 </head>
 <body>
 
     <div id="root"></div>
 
-    <!-- Detay ve Oynatıcı Modalları -->
+    <!-- Detay Modal -->
     <div id="detayModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="kapat('detayModal')">&times;</span>
@@ -61,21 +70,44 @@
         </div>
     </div>
 
-    <div id="playerModal" class="modal" style="padding:20px; box-sizing:border-box;">
+    <!-- Modern Video Modal -->
+    <div id="playerModal" class="modal">
         <span class="close" onclick="durdurVideo()">&times;</span>
-        <iframe id="googlePlayer" src="" allow="autoplay"></iframe>
+        <div class="player-wrapper">
+            <div id="player-container" class="plyr__video-embed">
+                <!-- Iframe JS ile buraya yüklenecek -->
+            </div>
+        </div>
     </div>
 
+    <!-- Plyr Modern Player JS -->
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
     <script>
         let globalVeri = null;
+        let player = null;
+
+        // Player'ı başlat
+        function initializePlayer() {
+            if (!player) {
+                player = new Plyr('#player-container', {
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+                    ratio: '16:9'
+                });
+            }
+        }
 
         function oynat(id) {
-            document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
+            const container = document.getElementById('player-container');
+            // Google Drive preview linkini modern player içine gömüyoruz
+            container.innerHTML = `<iframe src="https://drive.google.com/file/d/${id}/preview" allowfullscreen allowtransparency allow="autoplay"></iframe>`;
+            
             document.getElementById('playerModal').style.display = 'block';
+            initializePlayer();
+            window.scrollTo(0,0);
         }
 
         function durdurVideo() {
-            document.getElementById('googlePlayer').src = '';
+            document.getElementById('player-container').innerHTML = '';
             document.getElementById('playerModal').style.display = 'none';
         }
 
@@ -86,7 +118,6 @@
             document.getElementById('m-afis').src = item.afis || 'https://via.placeholder.com/300x450?text=Resim+Yok';
             document.getElementById('m-ozet').innerText = item.konu || "Açıklama mevcut değil.";
             
-            // Terminaldeki puanı buraya çekiyoruz
             document.getElementById('m-puan').innerHTML = `⭐ TMDB Puanı: ${item.puan || '0.0'}`;
             document.getElementById('m-kadro').innerText = item.oyuncular || "Bilgi bulunamadı.";
             
@@ -111,7 +142,6 @@
             document.getElementById('detayModal').style.display = 'block';
         }
 
-        // JSON dosyasını cache-buster ile taze taze çekiyoruz[cite: 2]
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
@@ -119,7 +149,6 @@
             const root = document.getElementById('root');
             let kategoriler = {"TÜM İÇERİKLER": []};
 
-            // Dizileri işle[cite: 1]
             for (let anahtar in data.diziler) {
                 const d = data.diziler[anahtar];
                 kategoriler["TÜM İÇERİKLER"].push({isDizi: true, key: anahtar, data: d});
@@ -129,7 +158,6 @@
                 });
             }
 
-            // Filmleri işle[cite: 1]
             data.filmler.forEach(f => {
                 kategoriler["TÜM İÇERİKLER"].push({isDizi: false, data: f});
                 f.kategoriler.forEach(k => {
@@ -138,7 +166,6 @@
                 });
             });
 
-            // Ekrana bas
             for (let kat in kategoriler) {
                 let html = `<div class="section-title">${kat}</div><div class="grid">`;
                 kategoriler[kat].forEach(obj => {
