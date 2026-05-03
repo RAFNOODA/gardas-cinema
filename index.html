@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport çok kritikti, senin kodda zaten varmış, süper -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gardaş Cinema - Premium</title>
     <style>
@@ -13,9 +14,10 @@
             background: var(--bg); 
             color: white; 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; 
+            margin: 0 auto; /* BÜYÜK EKRANLARDA ORTALAMASI İÇİN AUTO EKLENDİ */
             padding: 10px; 
             overflow-x: hidden; 
+            max-width: 100%; /* Normalde tam genişlik */
         }
         
         .section-title { 
@@ -36,7 +38,29 @@
         }
 
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 900px) { .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; } }
+        
+        /* PC EKRANLARI İÇİN (Ferah görünüm) */
+        @media (min-width: 900px) { 
+            .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; padding: 0 10px; } 
+        }
+
+        /* YENİ EKLENEN: ANDROID TV VE DEV EKRANLAR İÇİN */
+        @media (min-width: 1500px) {
+            body {
+                max-width: 1600px; /* TV'de çok fazla yayılmasın, ortada toplansın */
+                padding: 30px;
+            }
+            .section-title {
+                font-size: 26px; /* Uzaktan okunsun diye başlıklar büyüdü */
+            }
+            .grid { 
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Afişler TV'de biraz daha büyük */
+                gap: 25px; 
+            }
+            .info h3 {
+                font-size: 16px; /* TV'de film isimleri rahat okunsun */
+            }
+        }
 
         /* Kart Tasarımı */
         .card { 
@@ -79,6 +103,21 @@
             .info h3 { font-size: 14px; }
         }
 
+        /* YENİ EKLENEN: TV MODAL (Detay Ekranı) AYARLARI */
+        @media (min-width: 1500px) {
+            .modal-content {
+                max-width: 1200px; /* TV'de film detayı kutusu büyüdü */
+                padding: 40px;
+                margin: 80px auto;
+            }
+            .detay-afis { width: 350px !important; max-width: 350px; }
+            #m-baslik { font-size: 36px !important; }
+            .puan-alani { font-size: 22px; }
+            .kadro-text, #m-ozet { font-size: 18px !important; }
+            .btn-izle { font-size: 22px; padding: 15px 40px; }
+            .bolum-item { font-size: 16px; padding: 15px; } /* Kumanda ile kolay basılsın diye butonlar büyüdü */
+        }
+
         .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; color: #fff; z-index: 1001; opacity: 0.7; }
         .close:hover { opacity: 1; }
         
@@ -95,7 +134,10 @@
         /* Oynatıcı Alanı */
         #player-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 10px; }
         iframe { width: 100%; max-width: 1000px; height: 60vh; border: none; border-radius: 8px; background: #000; }
+        
         @media (min-width: 768px) { iframe { height: 80vh; } }
+        /* YENİ EKLENEN: TV OYNATICI AYARLARI */
+        @media (min-width: 1500px) { iframe { max-width: 1500px; height: 85vh; } }
     </style>
 </head>
 <body>
