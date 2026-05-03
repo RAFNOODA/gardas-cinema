@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardaş Cinema - Premium</title>
+    <style>
+        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
+        
+        .section-title { font-size: 26px; border-left: 5px solid var(--red); padding-left: 15px; margin: 40px 0 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .grid { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+        
+        /* Kart Tasarımı */
+        .card { width: 190px; background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #333; position: relative; }
+        .card:hover { transform: scale(1.05); border-color: var(--red); box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); }
+        .card img { width: 100%; height: 280px; object-fit: cover; background: #333; }
+        .badge { position: absolute; top: 8px; right: 8px; background: var(--red); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 5; }
+        
+        .info { padding: 12px; text-align: center; }
+        .info h3 { margin: 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Detay Modalı */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 1000; overflow-y: auto; }
+        .modal-content { max-width: 950px; margin: 50px auto; background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; display: flex; gap: 30px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,1); }
+        .close { position: absolute; top: 15px; right: 25px; font-size: 35px; cursor: pointer; color: #777; transition: 0.3s; }
+        .close:hover { color: white; }
+        
+        .detay-afis { width: 300px; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .puan-alani { color: #00d573; font-weight: bold; font-size: 22px; margin: 15px 0; display: flex; align-items: center; gap: 10px; }
+        .kadro-text { color: #aaa; font-style: italic; margin-bottom: 20px; line-height: 1.4; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        
+        .btn-izle { background: var(--red); color: white; padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; transition: 0.3s; margin-top: 20px; display: inline-block; }
+        .btn-izle:hover { background: #b20710; transform: translateY(-2px); }
+        
+        .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 15px; }
+        .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 5px; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .bolum-item:hover { background: var(--red); }
+        
+        iframe { width: 100%; height: 85vh; border: none; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <!-- Detay ve Oynatıcı Modalları -->
+    <div id="detayModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="kapat('detayModal')">&times;</span>
+            <img id="m-afis" class="detay-afis" src="">
+            <div style="flex: 1;">
+                <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 32px;"></h1>
+                <div id="m-puan" class="puan-alani"></div>
+                <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
+                <p id="m-ozet" style="line-height:1.7; color:#ddd; font-size: 16px;"></p>
+                
+                <div id="m-kontrol"></div>
+                <div id="m-bolumler" class="bolum-konteynir"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="playerModal" class="modal" style="padding:20px; box-sizing:border-box;">
+        <span class="close" onclick="durdurVideo()">&times;</span>
+        <iframe id="googlePlayer" src="" allow="autoplay"></iframe>
+    </div>
+
+    <script>
+        let globalVeri = null;
+
+        function oynat(id) {
+            document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
+            document.getElementById('playerModal').style.display = 'block';
+        }
+
+        function durdurVideo() {
+            document.getElementById('googlePlayer').src = '';
+            document.getElementById('playerModal').style.display = 'none';
+        }
+
+        function kapat(id) { document.getElementById(id).style.display = 'none'; }
+
+        function detayGoster(item, isDizi, diziAnahtari) {
+            document.getElementById('m-baslik').innerText = item.ad;
+            document.getElementById('m-afis').src = item.afis || 'https://via.placeholder.com/300x450?text=Resim+Yok';
+            document.getElementById('m-ozet').innerText = item.konu || "Açıklama mevcut değil.";
+            
+            // Terminaldeki puanı buraya çekiyoruz
+            document.getElementById('m-puan').innerHTML = `⭐ TMDB Puanı: ${item.puan || '0.0'}`;
+            document.getElementById('m-kadro').innerText = item.oyuncular || "Bilgi bulunamadı.";
+            
+            const kontrol = document.getElementById('m-kontrol');
+            const bolumler = document.getElementById('m-bolumler');
+            bolumler.innerHTML = '';
+            kontrol.innerHTML = '';
+
+            if(isDizi) {
+                const dizi = globalVeri.diziler[diziAnahtari];
+                kontrol.innerHTML = `<h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Bölüm Seçiniz</h3>`;
+                for(let s in dizi.sezonlar) {
+                    bolumler.innerHTML += `<div style="grid-column: 1/-1; color:var(--red); font-weight:bold; margin-top:10px;">SEZON ${s}</div>`;
+                    dizi.sezonlar[s].sort((a,b) => a.bolum - b.bolum).forEach(b => {
+                        bolumler.innerHTML += `<div class="bolum-item" onclick="oynat('${b.id}')">Bölüm ${b.bolum}</div>`;
+                    });
+                }
+            } else {
+                kontrol.innerHTML = `<button class="btn-izle" onclick="oynat('${item.id}')">HEMEN İZLE</button>`;
+            }
+            
+            document.getElementById('detayModal').style.display = 'block';
+        }
+
+        // JSON dosyasını cache-buster ile taze taze çekiyoruz[cite: 2]
+        fetch('film.json?v=' + Date.now())
+        .then(res => res.json())
+        .then(data => {
+            globalVeri = data;
+            const root = document.getElementById('root');
+            let kategoriler = {"TÜM İÇERİKLER": []};
+
+            // Dizileri işle[cite: 1]
+            for (let anahtar in data.diziler) {
+                const d = data.diziler[anahtar];
+                kategoriler["TÜM İÇERİKLER"].push({isDizi: true, key: anahtar, data: d});
+                d.kategoriler.forEach(k => {
+                    if(!kategoriler[k]) kategoriler[k] = [];
+                    kategoriler[k].push({isDizi: true, key: anahtar, data: d});
+                });
+            }
+
+            // Filmleri işle[cite: 1]
+            data.filmler.forEach(f => {
+                kategoriler["TÜM İÇERİKLER"].push({isDizi: false, data: f});
+                f.kategoriler.forEach(k => {
+                    if(!kategoriler[k]) kategoriler[k] = [];
+                    kategoriler[k].push({isDizi: false, data: f});
+                });
+            });
+
+            // Ekrana bas
+            for (let kat in kategoriler) {
+                let html = `<div class="section-title">${kat}</div><div class="grid">`;
+                kategoriler[kat].forEach(obj => {
+                    const veriStr = JSON.stringify(obj.data).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                    html += `
+                        <div class="card" onclick='detayGoster(${veriStr}, ${obj.isDizi}, "${obj.key || ''}")'>
+                            <div class="badge">${obj.isDizi ? 'DİZİ' : 'FİLM'}</div>
+                            <img src="${obj.data.afis || ''}" onerror="this.src='https://via.placeholder.com/190x280?text=Afiş+Yok'">
+                            <div class="info"><h3>${obj.data.ad}</h3></div>
+                        </div>`;
+                });
+                root.innerHTML += html + `</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
