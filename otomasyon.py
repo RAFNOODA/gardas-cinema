@@ -4,7 +4,8 @@ import json, re, urllib.request, urllib.parse, os
 DRIVE_API_KEY = "AIzaSyAIezbRGTLiIZLfJFOS292lnKIwKqOT3Q0"
 KLASOR_ID = "1iA-tbMeSOs-eiD_-bzV2P8ba2fBNabxf"
 TMDB_API_KEY = "3fd2be6f0c70a2a598f084ddfb75487c"
-JSON_FILE = "/home/musab/Desktop/film.json"
+# HATA BURADAYDI, ARTIK DİREKT BULUNDUĞU KLASÖRE KAYDEDECEK
+JSON_FILE = "film.json" 
 
 def temiz_isim(ham_ad):
     t = ham_ad.lower()
@@ -15,7 +16,7 @@ def temiz_isim(ham_ad):
     return t.strip().title()
 
 def tmdb_sorgula(isim, tip="movie"):
-    """Puan ve Kadro için derinlemesine sorgu yapar[cite: 1]"""
+    """Puan ve Kadro için derinlemesine sorgu yapar"""
     encoded_name = urllib.parse.quote(isim)
     search_url = f"https://api.themoviedb.org/3/search/{tip}?api_key={TMDB_API_KEY}&query={encoded_name}&language=tr-TR"
     
@@ -28,7 +29,7 @@ def tmdb_sorgula(isim, tip="movie"):
             f = veri['results'][0]
             tmdb_id = f['id']
             
-            # append_to_response ile tek seferde oyuncuları ve detayları al[cite: 1]
+            # append_to_response ile tek seferde oyuncuları ve detayları al
             detay_url = f"https://api.themoviedb.org/3/{tip}/{tmdb_id}?api_key={TMDB_API_KEY}&language=tr-TR&append_to_response=credits"
             
             with urllib.request.urlopen(detay_url, timeout=10) as d_res:
@@ -40,7 +41,7 @@ def tmdb_sorgula(isim, tip="movie"):
                     "afis": f"https://image.tmdb.org/t/p/w500{d_veri['poster_path']}" if d_veri.get('poster_path') else None,
                     "konu": d_veri.get('overview') or "Açıklama bulunamadı.",
                     "kategoriler": [g['name'] for g in d_veri.get('genres', [])] or ["Genel"],
-                    "puan": str(round(d_veri.get('vote_average', 0.0), 1)), # Tam Puan[cite: 1]
+                    "puan": str(round(d_veri.get('vote_average', 0.0), 1)),
                     "oyuncular": ", ".join([o['name'] for o in cast[:5]]) if cast else "Bilinmiyor"
                 }
     except: return None
@@ -58,7 +59,7 @@ def calistir():
             if d['name'].lower().endswith(('.json', '.py', '.html', '.txt')): continue
             m = re.search(r'(.*?)[. ]?s(\d+)e(\d+)', d['name'], re.IGNORECASE)
             
-            if m: # Dizi[cite: 1]
+            if m:
                 ham_ad = temiz_isim(m.group(1)); s, e = int(m.group(2)), int(m.group(3))
                 if ham_ad not in arsiv["diziler"]:
                     info = tmdb_sorgula(ham_ad, "tv")
@@ -71,7 +72,7 @@ def calistir():
                 if s not in arsiv["diziler"][ham_ad]["sezonlar"]: arsiv["diziler"][ham_ad]["sezonlar"][s] = []
                 arsiv["diziler"][ham_ad]["sezonlar"][s].append({"bolum": e, "id": d['id']})
                 print(f"🎬 {ham_ad} - Puan: {arsiv['diziler'][ham_ad]['puan']}")
-            else: # Film[cite: 1]
+            else:
                 film_ad = temiz_isim(d['name'])
                 info = tmdb_sorgula(film_ad, "movie") or tmdb_sorgula(film_ad, "tv")
                 puan_verisi = info['puan'] if info else "0.0"
@@ -88,13 +89,11 @@ def calistir():
         print(f"✅ JSON Mühürlendi: {JSON_FILE}")
     except Exception as e: print(f"❌ Hata: {e}")
 
-if __name__ == "__main__": calistir()
 import subprocess
 
 def githuba_firlat():
     try:
         print("🚀 Kütüphane GitHub'a yükleniyor...")
-        # Terminal komutlarını sırayla çalıştırır
         subprocess.run(["git", "add", "film.json"], check=True)
         subprocess.run(["git", "commit", "-m", "Kütüphane güncellendi"], check=True)
         subprocess.run(["git", "push", "origin", "main"], check=True)
@@ -102,7 +101,6 @@ def githuba_firlat():
     except Exception as e:
         print(f"❌ GitHub bağlantı hatası: {e}")
 
-# Mevcut calistir() kısmını şu şekilde güncelle:
 if __name__ == "__main__":
-    calistir() # Önce Drive'ı tara ve JSON'u yap
-    githuba_firlat() # Sonra otomatik GitHub'a gönder
+    calistir() 
+    githuba_firlat()
