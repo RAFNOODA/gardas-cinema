@@ -1,6 +1,19 @@
 {
     "filmler": [
         {
+            "id": "1boZCMWyVfyqtyirYo2mmnbkGH89vUOx0",
+            "ad": "El Camino: Bir Breaking Bad Filmi",
+            "afis": "https://image.tmdb.org/t/p/w500/exsByu9wCHLHLzjPXxhwQZXGIbA.jpg",
+            "konu": "Firari Jesse Pinkman, geçmişinden kaçmaya çalışır.",
+            "puan": "7.0",
+            "oyuncular": "Aaron Paul, Jesse Plemons, Charles Baker, Matt Jones, Scott MacArthur",
+            "kategoriler": [
+                "Suç",
+                "Dram",
+                "Gerilim"
+            ]
+        },
+        {
             "id": "1AZt6Roh7WgT-7d-1zLNZLe3YD5BqbveP",
             "ad": "Kung Fu Panda 3",
             "afis": "https://image.tmdb.org/t/p/w500/oajNi4Su39WAByHI6EONu8G8HYn.jpg",
