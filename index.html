@@ -19,6 +19,43 @@
             max-width: 100%; 
         }
 
+        /* --- GİRİŞ EKRANI (BARİYER) STİLLERİ --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 20, 20, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            text-align: center;
+            padding: 20px;
+        }
+        .login-box {
+            background: #111;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid var(--red);
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
+        }
+        .btn-google {
+            background: #4285F4;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-google:hover { background: #357ae8; transform: scale(1.05); }
+        /* -------------------------------------- */
+
         .search-container {
             position: sticky;
             top: 0;
@@ -90,40 +127,87 @@
 </head>
 <body>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+    <!-- GİRİŞ EKRANI (Bariyer) -->
+    <div id="login-screen" style="display: none;">
+        <div class="login-box">
+            <h1 style="color:var(--red); font-size: 32px; margin-top:0;">Gardaş Cinema</h1>
+            <h2 style="color:white; font-size: 18px;">VİP Girişi</h2>
+            <p style="color:#aaa; line-height: 1.5; margin-bottom: 25px;">
+                Videoları kesintisiz ve "Kota Doldu" hatası almadan izleyebilmek için herhangi bir Google hesabıyla giriş yapmanız zorunludur.<br><br>
+                <small><i>(Mailinizin sonu ne olursa olsun geçerlidir, yeter ki Google hesabı olsun.)</i></small>
+            </p>
+            <button class="btn-google" onclick="googleIleGirisYap()">Google İle Giriş Yap</button>
+        </div>
     </div>
 
-    <div id="noResults" style="display:none; text-align:center; padding:40px; color:#888;">Sonuç bulunamadı.</div>
-    <div id="root"></div>
+    <!-- SİTENİN ASIL İÇERİĞİ (Giriş yapmadan görünmez) -->
+    <div id="main-content" style="display: none;">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+        </div>
 
-    <div id="detayModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="kapat('detayModal')">&times;</span>
-            <img id="m-afis" class="detay-afis" src="">
-            <div style="flex: 1;">
-                <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 26px;"></h1>
-                <div id="m-puan" class="puan-alani"></div>
-                <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
-                <p id="m-ozet" style="line-height:1.6; color:#ddd; font-size: 14px;"></p>
-                <div id="m-kontrol"></div>
-                <div id="m-bolumler" class="bolum-konteynir"></div>
+        <div id="noResults" style="display:none; text-align:center; padding:40px; color:#888;">Sonuç bulunamadı.</div>
+        <div id="root"></div>
+
+        <div id="detayModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="kapat('detayModal')">&times;</span>
+                <img id="m-afis" class="detay-afis" src="">
+                <div style="flex: 1;">
+                    <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 26px;"></h1>
+                    <div id="m-puan" class="puan-alani"></div>
+                    <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
+                    <p id="m-ozet" style="line-height:1.6; color:#ddd; font-size: 14px;"></p>
+                    <div id="m-kontrol"></div>
+                    <div id="m-bolumler" class="bolum-konteynir"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="playerModal" class="modal">
+            <span class="close" onclick="durdurVideo()">&times;</span>
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                <iframe id="googlePlayer" src="" allow="autoplay; fullscreen"></iframe>
             </div>
         </div>
     </div>
 
-    <div id="playerModal" class="modal">
-        <span class="close" onclick="durdurVideo()">&times;</span>
-        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-            <iframe id="googlePlayer" src="" allow="autoplay; fullscreen"></iframe>
-        </div>
-    </div>
-
     <script>
+        // --- GİRİŞ VE BARİYER KONTROL SİSTEMİ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. URL'de "giris_yapildi=1" var mı diye bak (Google'dan dönüş yaptıysa bu olur)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('giris_yapildi') === '1') {
+                localStorage.setItem('gardas_vip_onay', 'true');
+                // Adres çubuğundaki kalabalığı temizle
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // 2. Kullanıcı daha önce giriş yapmış mı kontrol et
+            if (localStorage.getItem('gardas_vip_onay') === 'true') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+            } else {
+                // Giriş yapmamışsa bariyeri göster
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+            }
+        });
+
+        function googleIleGirisYap() {
+            // Site adresini al ve sonuna başarılı dönüş kodunu ekle
+            const donusAdresi = window.location.origin + window.location.pathname + "?giris_yapildi=1";
+            
+            // Adamı Google'ın giriş sayfasına yolla, işi bitince bizim siteye geri fırlatacak
+            window.location.href = "https://accounts.google.com/ServiceLogin?continue=" + encodeURIComponent(donusAdresi);
+        }
+        // ----------------------------------------
+
+
+        // SİTENİN ORİJİNAL KODLARI
         let globalVeri = null;
 
         function oynat(id) {
-            // STABİL PREVIEW MODU[cite: 2]
             document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
