@@ -2,13 +2,15 @@
     "filmler": [
         {
             "id": "1qOEJQZJ5xDpIVF7MkmlZGEakeaTVkCMe",
-            "ad": "John Whick 3",
-            "afis": null,
-            "konu": "Açıklama yok.",
-            "puan": "0.0",
-            "oyuncular": "Bilinmiyor",
+            "ad": "John Wick: Chapter 3 - Parabellum",
+            "afis": "https://image.tmdb.org/t/p/w500/c1QmssgO9Kfx2fVFP0c1X7CGXX9.jpg",
+            "konu": "14 milyon dolarlık bir kontrat yüzünden herkes John Wick’in peşine takılmıştır. Her türlü hizmeti alması yasaklanır, diğer bütün üyelerle iletişimi kesilir. Continental Hotel’in yöneticisi Winston Scott O’na kaçıp kaybolması için bir saat zaman verir. John, New York’tan çıkmak ve hayatta kalmak için hizmet sektörünü kullanacak, bunları yaparken de dövüşerek ve öldürerek kendini aklama yoluna devam edecektir.",
+            "puan": "7.4",
+            "oyuncular": "Keanu Reeves, Halle Berry, Ian McShane, Laurence Fishburne, Mark Dacascos",
             "kategoriler": [
-                "Film"
+                "Aksiyon",
+                "Gerilim",
+                "Suç"
             ]
         },
         {
