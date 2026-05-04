@@ -2,22 +2,54 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport çok kritikti, senin kodda zaten varmış, süper -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gardaş Cinema - Premium</title>
     <style>
-        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; }
+        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; --hover-bg: #2a2a2a; }
         
-        * { box-sizing: border-box; } /* Taşmaları önleyen kritik ayar */
+        * { box-sizing: border-box; }
 
         body { 
             background: var(--bg); 
             color: white; 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0 auto; /* BÜYÜK EKRANLARDA ORTALAMASI İÇİN AUTO EKLENDİ */
+            margin: 0 auto; 
             padding: 10px; 
             overflow-x: hidden; 
-            max-width: 100%; /* Normalde tam genişlik */
+            max-width: 100%; 
+        }
+
+        /* YENİ EKLENEN: CİLALI ARAMA ÇUBUĞU */
+        .search-container {
+            position: sticky;
+            top: 0;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 15px 0;
+            z-index: 100;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            background: var(--card-bg);
+            border: 2px solid #333;
+            border-radius: 25px;
+            color: white;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+            background: var(--hover-bg);
+        }
+
+        .search-input::placeholder {
+            color: #888;
         }
         
         .section-title { 
@@ -29,49 +61,23 @@
             letter-spacing: 1px; 
         }
 
-        /* Responsive Grid: Mobilde 2, Tablette 3, PC'de otomatik */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
-            margin-bottom: 30px; 
-        }
-
+        /* Grid Ayarları */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
         @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; padding: 0 10px; } }
         
-        /* PC EKRANLARI İÇİN (Ferah görünüm) */
-        @media (min-width: 900px) { 
-            .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; padding: 0 10px; } 
-        }
-
-        /* YENİ EKLENEN: ANDROID TV VE DEV EKRANLAR İÇİN */
         @media (min-width: 1500px) {
-            body {
-                max-width: 1600px; /* TV'de çok fazla yayılmasın, ortada toplansın */
-                padding: 30px;
-            }
-            .section-title {
-                font-size: 26px; /* Uzaktan okunsun diye başlıklar büyüdü */
-            }
-            .grid { 
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Afişler TV'de biraz daha büyük */
-                gap: 25px; 
-            }
-            .info h3 {
-                font-size: 16px; /* TV'de film isimleri rahat okunsun */
-            }
+            body { max-width: 1600px; padding: 30px; }
+            .section-title { font-size: 26px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+            .info h3 { font-size: 16px; }
         }
 
         /* Kart Tasarımı */
         .card { 
-            background: var(--card-bg); 
-            border-radius: 8px; 
-            overflow: hidden; 
-            cursor: pointer; 
-            transition: transform 0.3s ease; 
-            border: 1px solid #333; 
-            position: relative; 
-            width: 100%;
+            background: var(--card-bg); border-radius: 8px; overflow: hidden; 
+            cursor: pointer; transition: transform 0.3s ease; border: 1px solid #333; 
+            position: relative; width: 100%;
         }
         .card:hover { transform: scale(1.03); border-color: var(--red); }
         .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #333; display: block; }
@@ -80,42 +86,31 @@
         .info { padding: 8px; text-align: center; }
         .info h3 { margin: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Detay Modalı */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
-        
-        .modal-content { 
-            width: 95%; 
-            max-width: 900px; 
-            margin: 20px auto; 
-            background: #1a1a1a; 
-            padding: 20px; 
-            border-radius: 12px; 
-            border: 1px solid #333; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            position: relative; 
+        /* Arama Sonucu Bulunamadı Mesajı */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 18px;
+            display: none;
         }
 
+        /* Modallar */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
+        .modal-content { width: 95%; max-width: 900px; margin: 20px auto; background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; gap: 20px; position: relative; }
+        
         @media (min-width: 768px) {
             .modal-content { flex-direction: row; margin: 50px auto; padding: 30px; }
             .detay-afis { width: 280px !important; }
-            .info h3 { font-size: 14px; }
         }
-
-        /* YENİ EKLENEN: TV MODAL (Detay Ekranı) AYARLARI */
         @media (min-width: 1500px) {
-            .modal-content {
-                max-width: 1200px; /* TV'de film detayı kutusu büyüdü */
-                padding: 40px;
-                margin: 80px auto;
-            }
+            .modal-content { max-width: 1200px; padding: 40px; margin: 80px auto; }
             .detay-afis { width: 350px !important; max-width: 350px; }
             #m-baslik { font-size: 36px !important; }
             .puan-alani { font-size: 22px; }
             .kadro-text, #m-ozet { font-size: 18px !important; }
             .btn-izle { font-size: 22px; padding: 15px 40px; }
-            .bolum-item { font-size: 16px; padding: 15px; } /* Kumanda ile kolay basılsın diye butonlar büyüdü */
+            .bolum-item { font-size: 16px; padding: 15px; } 
         }
 
         .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; color: #fff; z-index: 1001; opacity: 0.7; }
@@ -124,24 +119,49 @@
         .detay-afis { width: 100%; max-width: 220px; margin: 0 auto; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .puan-alani { color: #00d573; font-weight: bold; font-size: 18px; margin: 10px 0; display: flex; align-items: center; gap: 8px; }
         .kadro-text { color: #aaa; font-size: 13px; margin-bottom: 15px; line-height: 1.4; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        
         .btn-izle { background: var(--red); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 10px; }
         
         .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 15px; }
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.2s; }
         .bolum-item:hover { background: var(--red); }
         
-        /* Oynatıcı Alanı */
-        #player-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 10px; }
-        iframe { width: 100%; max-width: 1000px; height: 60vh; border: none; border-radius: 8px; background: #000; }
+        /* DÜZELTİLEN YENİ OYNATICI ALANI (Mi 11T vb. cihazlar için tam ekran) */
+        #playerModal {
+            background: #000; /* Video arkası simsiyah olsun */
+        }
         
-        @media (min-width: 768px) { iframe { height: 80vh; } }
-        /* YENİ EKLENEN: TV OYNATICI AYARLARI */
-        @media (min-width: 1500px) { iframe { max-width: 1500px; height: 85vh; } }
+        #player-wrapper { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 0; 
+        }
+        
+        iframe { 
+            width: 100vw; 
+            height: 100vh; 
+            border: none; 
+            background: #000; 
+        }
+
+        /* Telefon Yan Döndüğünde (Yatay Mod) Mutlak Tam Ekran */
+        @media (orientation: landscape) {
+            #player-wrapper { height: 100vh; width: 100vw; }
+            iframe { height: 100vh; width: 100vw; }
+            .close { top: 15px; right: 25px; font-size: 35px; background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Arama Çubuğu -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+    </div>
+
+    <div id="noResults" class="no-results">Arama sonucuna uygun film veya dizi bulunamadı.</div>
     <div id="root"></div>
 
     <!-- Detay Modal -->
@@ -175,7 +195,7 @@
         function oynat(id) {
             document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
             document.getElementById('playerModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Kaydırmayı engelle
+            document.body.style.overflow = 'hidden'; 
         }
 
         function durdurVideo() {
@@ -216,6 +236,41 @@
             
             document.getElementById('detayModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
+        }
+
+        // ARAMA FONKSİYONU
+        function icerikAra() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            let sections = document.getElementsByClassName('section-title');
+            let grids = document.getElementsByClassName('grid');
+            let hasResults = false;
+
+            // Kartları filtrele
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].querySelector('h3').innerText.toLowerCase();
+                if (title.includes(input)) {
+                    cards[i].style.display = "";
+                    hasResults = true;
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+
+            // Boş kalan kategori başlıklarını gizle
+            for (let i = 0; i < grids.length; i++) {
+                let visibleCards = grids[i].querySelectorAll('.card[style=""]').length;
+                if (visibleCards === 0) {
+                    sections[i].style.display = "none";
+                    grids[i].style.display = "none";
+                } else {
+                    sections[i].style.display = "block";
+                    grids[i].style.display = "grid";
+                }
+            }
+
+            // Sonuç yok mesajını göster/gizle
+            document.getElementById('noResults').style.display = hasResults ? "none" : "block";
         }
 
         fetch('film.json?v=' + Date.now())
