@@ -195,10 +195,10 @@
         });
 
         function googleIleGirisYap() {
-            // Site adresini al ve sonuna başarılı dönüş kodunu ekle
-            const donusAdresi = window.location.origin + window.location.pathname + "?giris_yapildi=1";
+            // Adresi elle (hardcoded) yazıyoruz ki hata payı kalmasın
+            const donusAdresi = "https://rafnooda.github.io/gardas-cinema/index.html?giris_yapildi=1";
             
-            // Adamı Google'ın giriş sayfasına yolla, işi bitince bizim siteye geri fırlatacak
+            // Google'ın giriş sayfasına gönderiyoruz
             window.location.href = "https://accounts.google.com/ServiceLogin?continue=" + encodeURIComponent(donusAdresi);
         }
         // ----------------------------------------
