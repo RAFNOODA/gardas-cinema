@@ -1,6 +1,17 @@
 {
     "filmler": [
         {
+            "id": "1qOEJQZJ5xDpIVF7MkmlZGEakeaTVkCMe",
+            "ad": "John Whick 3",
+            "afis": null,
+            "konu": "Açıklama yok.",
+            "puan": "0.0",
+            "oyuncular": "Bilinmiyor",
+            "kategoriler": [
+                "Film"
+            ]
+        },
+        {
             "id": "1yWFH9PauHdRd3VzjBbjkBJDq9hLWYBbz",
             "ad": "Ballerina",
             "afis": "https://image.tmdb.org/t/p/w500/2VUmvqsHb6cEtdfscEA6fqqVzLg.jpg",
