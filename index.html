@@ -193,7 +193,10 @@
         let globalVeri = null;
 
         function oynat(id) {
-            document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
+            // Hiremco TV ve harici oynatıcılar için doğrudan video oynatma/indirme linki
+            const directLink = `https://drive.google.com/uc?id=${id}&export=download`;
+            
+            document.getElementById('googlePlayer').src = directLink;
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
         }
