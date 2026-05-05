@@ -174,8 +174,8 @@
     <script>
         // --- OTURUM KONTROLÜ ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Cihazda onay mühürü var mı diye bakıyoruz
-            if (localStorage.getItem('gardas_vip_onay') === 'true') {
+            // Mühür ismini (gardas_vip_v2) olarak değiştirdim, tarayıcın seni unutacak!
+            if (localStorage.getItem('gardas_vip_v2') === 'true') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
             } else {
@@ -185,13 +185,10 @@
         });
 
         function googleIleGirisYap() {
-            // Butona basıldığı an mühürü basıyoruz
-            localStorage.setItem('gardas_vip_onay', 'true');
+            // Yeni mühürü basıyoruz
+            localStorage.setItem('gardas_vip_v2', 'true');
             
-            // Kullanıcıya ne yapması gerektiğini söylüyoruz
             alert("BİLGİ: Tamam'a bastığınızda giriş sayfası açılacak.\n\nGiriş yaptıktan sonra Google Drive ekranını gördüğünüzde UYGULAMAYI KAPATIP TEKRAR AÇIN.");
-            
-            // 400 hatası veya güvensiz uyarısı vermesin diye direkt Drive'ın login sayfasına yönlendiriyoruz
             window.location.href = "https://accounts.google.com/ServiceLogin?continue=https://drive.google.com";
         }
         // -----------------------
