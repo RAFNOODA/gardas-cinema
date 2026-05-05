@@ -175,15 +175,7 @@
     <script>
         // --- GİRİŞ VE BARİYER KONTROL SİSTEMİ ---
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. URL'de "giris_yapildi=1" var mı diye bak (Google'dan dönüş yaptıysa bu olur)
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('giris_yapildi') === '1') {
-                localStorage.setItem('gardas_vip_onay', 'true');
-                // Adres çubuğundaki kalabalığı temizle
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-
-            // 2. Kullanıcı daha önce giriş yapmış mı kontrol et
+            // Kullanıcı daha önce giriş onayı almış mı kontrol et
             if (localStorage.getItem('gardas_vip_onay') === 'true') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
@@ -195,11 +187,14 @@
         });
 
         function googleIleGirisYap() {
-            // Adresi elle (hardcoded) yazıyoruz ki hata payı kalmasın
-            const donusAdresi = "https://rafnooda.github.io/gardas-cinema/index.html?giris_yapildi=1";
+            // Adam butona bastığı an sisteme "bu adam giriş adımına geçti" diye mühürlüyoruz.
+            localStorage.setItem('gardas_vip_onay', 'true');
             
-            // Google'ın giriş sayfasına gönderiyoruz
-            window.location.href = "https://accounts.google.com/ServiceLogin?continue=" + encodeURIComponent(donusAdresi);
+            // Ekrana net bir uyarı veriyoruz
+            alert("BİLGİ: Tamam'a bastığınızda Google giriş sayfası açılacak.\n\nHesabınıza giriş yaptıktan sonra karşınıza 'Google Drive' ekranı gelecek. O ekranı gördüğünüzde UYGULAMAYI KAPATIP TEKRAR AÇIN. Filmleriniz açılmış olacaktır.");
+            
+            // Adamı kendi sitemize değil, mecburen Google Drive'a yönlendiriyoruz ki 400 hatası vermesin
+            window.location.href = "https://accounts.google.com/ServiceLogin?continue=https://drive.google.com";
         }
         // ----------------------------------------
 
