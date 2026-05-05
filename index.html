@@ -19,6 +19,43 @@
             max-width: 100%; 
         }
 
+        /* --- VİP GİRİŞ EKRANI STİLLERİ --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 20, 20, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            text-align: center;
+            padding: 20px;
+        }
+        .login-box {
+            background: #111;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid var(--red);
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
+        }
+        .btn-google {
+            background: #4285F4;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-google:hover { background: #357ae8; transform: scale(1.05); }
+        /* -------------------------------------- */
+
         .search-container {
             position: sticky;
             top: 0;
@@ -90,40 +127,75 @@
 </head>
 <body>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+    <!-- VİP GİRİŞ EKRANI -->
+    <div id="login-screen" style="display: none;">
+        <div class="login-box">
+            <h1 style="color:var(--red); font-size: 32px; margin-top:0;">Gardaş Cinema</h1>
+            <h2 style="color:white; font-size: 18px;">VİP Girişi</h2>
+            <p style="color:#aaa; line-height: 1.5; margin-bottom: 25px;">
+                Videoları "Kota Doldu" hatası almadan sınırsız izleyebilmek için herhangi bir Google hesabıyla giriş yapmanız zorunludur.
+            </p>
+            <button class="btn-google" onclick="googleIleGirisYap()">Google İle Giriş Yap / Onayla</button>
+        </div>
     </div>
 
-    <div id="noResults" style="display:none; text-align:center; padding:40px; color:#888;">Sonuç bulunamadı.</div>
-    <div id="root"></div>
+    <!-- SİTENİN ASIL İÇERİĞİ -->
+    <div id="main-content" style="display: none;">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+        </div>
 
-    <div id="detayModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="kapat('detayModal')">&times;</span>
-            <img id="m-afis" class="detay-afis" src="">
-            <div style="flex: 1;">
-                <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 26px;"></h1>
-                <div id="m-puan" class="puan-alani"></div>
-                <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
-                <p id="m-ozet" style="line-height:1.6; color:#ddd; font-size: 14px;"></p>
-                <div id="m-kontrol"></div>
-                <div id="m-bolumler" class="bolum-konteynir"></div>
+        <div id="noResults" style="display:none; text-align:center; padding:40px; color:#888;">Sonuç bulunamadı.</div>
+        <div id="root"></div>
+
+        <div id="detayModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="kapat('detayModal')">&times;</span>
+                <img id="m-afis" class="detay-afis" src="">
+                <div style="flex: 1;">
+                    <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 26px;"></h1>
+                    <div id="m-puan" class="puan-alani"></div>
+                    <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
+                    <p id="m-ozet" style="line-height:1.6; color:#ddd; font-size: 14px;"></p>
+                    <div id="m-kontrol"></div>
+                    <div id="m-bolumler" class="bolum-konteynir"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="playerModal" class="modal">
+            <span class="close" onclick="durdurVideo()">&times;</span>
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                <iframe id="googlePlayer" src="" allow="autoplay; fullscreen"></iframe>
             </div>
         </div>
     </div>
 
-    <div id="playerModal" class="modal">
-        <span class="close" onclick="durdurVideo()">&times;</span>
-        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-            <iframe id="googlePlayer" src="" allow="autoplay; fullscreen"></iframe>
-        </div>
-    </div>
-
     <script>
+        // --- GİRİŞ VE BARİYER KONTROL SİSTEMİ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('gardas_vip_onay') === 'true') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+            }
+        });
+
+        function googleIleGirisYap() {
+            // Sisteme bu adamın giriş yaptığını kalıcı olarak kaydediyoruz
+            localStorage.setItem('gardas_vip_onay', 'true');
+            
+            // Adamı net bir şekilde uyarıp Google Drive ana sayfasına yönlendiriyoruz (Güvenlik hatası vermesin diye)
+            alert("BİLGİ: Tamam'a bastığınızda giriş sayfası açılacak.\n\nGiriş yaptıktan sonra Google Drive ekranını gördüğünüzde UYGULAMAYI KAPATIP TEKRAR AÇIN.");
+            window.location.href = "https://accounts.google.com/ServiceLogin?continue=https://drive.google.com";
+        }
+        // ----------------------------------------
+
         let globalVeri = null;
 
         function oynat(id) {
-            // STABİL PREVIEW MODU
             document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
