@@ -19,7 +19,7 @@
             max-width: 100%; 
         }
 
-        /* --- VİP GİRİŞ EKRANI STİLLERİ --- */
+        /* --- VİP GİRİŞ EKRANI (BARİYER) --- */
         #login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -127,13 +127,13 @@
 </head>
 <body>
 
-    <!-- VİP GİRİŞ EKRANI -->
+    <!-- GİRİŞ EKRANI (Bariyer) -->
     <div id="login-screen" style="display: none;">
         <div class="login-box">
             <h1 style="color:var(--red); font-size: 32px; margin-top:0;">Gardaş Cinema</h1>
-            <h2 style="color:white; font-size: 18px;">VİP Girişi</h2>
+            <h2 style="color:white; font-size: 18px;">VİP Erişimi</h2>
             <p style="color:#aaa; line-height: 1.5; margin-bottom: 25px;">
-                Videoları "Kota Doldu" hatası almadan sınırsız izleyebilmek için herhangi bir Google hesabıyla giriş yapmanız zorunludur.
+                Videoları "Kota Doldu" hatası almadan sınırsız izleyebilmek için <b>vgffgg036@gmail.com</b> veya herhangi bir Google hesabıyla giriş yapmanız zorunludur.
             </p>
             <button class="btn-google" onclick="googleIleGirisYap()">Google İle Giriş Yap / Onayla</button>
         </div>
@@ -172,8 +172,9 @@
     </div>
 
     <script>
-        // --- GİRİŞ VE BARİYER KONTROL SİSTEMİ ---
+        // --- OTURUM KONTROLÜ ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Cihazda onay mühürü var mı diye bakıyoruz
             if (localStorage.getItem('gardas_vip_onay') === 'true') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
@@ -184,14 +185,16 @@
         });
 
         function googleIleGirisYap() {
-            // Sisteme bu adamın giriş yaptığını kalıcı olarak kaydediyoruz
+            // Butona basıldığı an mühürü basıyoruz
             localStorage.setItem('gardas_vip_onay', 'true');
             
-            // Adamı net bir şekilde uyarıp Google Drive ana sayfasına yönlendiriyoruz (Güvenlik hatası vermesin diye)
+            // Kullanıcıya ne yapması gerektiğini söylüyoruz
             alert("BİLGİ: Tamam'a bastığınızda giriş sayfası açılacak.\n\nGiriş yaptıktan sonra Google Drive ekranını gördüğünüzde UYGULAMAYI KAPATIP TEKRAR AÇIN.");
+            
+            // 400 hatası veya güvensiz uyarısı vermesin diye direkt Drive'ın login sayfasına yönlendiriyoruz
             window.location.href = "https://accounts.google.com/ServiceLogin?continue=https://drive.google.com";
         }
-        // ----------------------------------------
+        // -----------------------
 
         let globalVeri = null;
 
