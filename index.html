@@ -112,14 +112,25 @@
 
         let globalVeri = null;
 
-        function oynat(id) {
-            const videoElement = document.getElementById('nativePlayer');
-            // Cloudflare proxy linkini videoya basıyoruz
-            videoElement.src = `${WORKER_URL}?id=${id}`;
-            document.getElementById('playerModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; 
-            videoElement.load();
-            videoElement.play();
+       function oynat(id) {
+    const videoElement = document.getElementById('nativePlayer');
+    const proxyLink = `${WORKER_URL}?id=${id}&t=${Date.now()}`; // t= parametresi önbelleği (cache) kırar
+    
+    videoElement.src = proxyLink;
+    document.getElementById('playerModal').style.display = 'block';
+    document.body.style.overflow = 'hidden'; 
+    
+    videoElement.load(); // Videoyu hafızaya çek
+    
+    // Video oynamazsa 2 saniye sonra tekrar dene
+    let playPromise = videoElement.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.log("Bağlantı bekleniyor, tekrar deneniyor...");
+            setTimeout(() => { videoElement.play(); }, 2000);
+        });
+    }
+}
         }
 
         function durdurVideo() {
