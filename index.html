@@ -20,40 +20,23 @@
         }
 
         .search-container {
-            position: sticky;
-            top: 0;
-            background: rgba(20, 20, 20, 0.95);
-            padding: 15px 0;
-            z-index: 100;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
+            position: sticky; top: 0; background: rgba(20, 20, 20, 0.95);
+            padding: 15px 0; z-index: 100; margin-bottom: 20px; backdrop-filter: blur(5px);
         }
 
         .search-input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 16px;
-            background: var(--card-bg);
-            border: 2px solid #333;
-            border-radius: 25px;
-            color: white;
-            outline: none;
-            transition: all 0.3s ease;
+            width: 100%; padding: 15px 20px; font-size: 16px;
+            background: var(--card-bg); border: 2px solid #333;
+            border-radius: 25px; color: white; outline: none; transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            border-color: var(--red);
-            box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
-            background: var(--hover-bg);
+            border-color: var(--red); box-shadow: 0 0 15px rgba(229, 9, 20, 0.3); background: var(--hover-bg);
         }
         
         .section-title { 
-            font-size: 20px; 
-            border-left: 4px solid var(--red); 
-            padding-left: 12px; 
-            margin: 25px 0 15px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
+            font-size: 20px; border-left: 4px solid var(--red); 
+            padding-left: 12px; margin: 25px 0 15px; text-transform: uppercase; 
         }
 
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
@@ -62,8 +45,7 @@
         
         .card { 
             background: var(--card-bg); border-radius: 8px; overflow: hidden; 
-            cursor: pointer; transition: transform 0.3s ease; border: 1px solid #333; 
-            position: relative; width: 100%;
+            cursor: pointer; transition: transform 0.3s ease; border: 1px solid #333; position: relative; 
         }
         .card:hover { transform: scale(1.03); border-color: var(--red); }
         .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #333; display: block; }
@@ -85,7 +67,7 @@
         .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 15px; }
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
-        /* HTML5 VİDEO STİLLERİ */
+        /* KENDİ HTML5 VİDEO OYNATICIMIZ */
         .video-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: #000; }
         video { width: 100%; max-height: 100vh; outline: none; }
     </style>
@@ -115,7 +97,7 @@
             </div>
         </div>
 
-        <!-- HTML5 OYNATICI -->
+        <!-- HTML5 VİDEO EKRANI -->
         <div id="playerModal" class="modal">
             <span class="close" style="z-index: 1002;" onclick="durdurVideo()">&times;</span>
             <div class="video-container">
@@ -125,25 +107,25 @@
     </div>
 
     <script>
-        // Senin Özel Cloudflare Proxy Adresin
+        // İŞTE SENİN CLOUDFLARE SUNUCUN
         const WORKER_URL = "https://withered-poetry-11d2.musabhde.workers.dev/";
 
         let globalVeri = null;
 
         function oynat(id) {
             const videoElement = document.getElementById('nativePlayer');
-            // Cloudflare üzerinden videoyu çekiyoruz
+            // Cloudflare proxy linkini videoya basıyoruz
             videoElement.src = `${WORKER_URL}?id=${id}`;
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
             videoElement.load();
-            videoElement.play().catch(e => console.log("Otomatik oynatma engellendi."));
+            videoElement.play();
         }
 
         function durdurVideo() {
             const videoElement = document.getElementById('nativePlayer');
             videoElement.pause();
-            videoElement.src = '';
+            videoElement.src = ''; // Arka planda indirmeyi durdurur
             document.getElementById('playerModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
@@ -212,7 +194,6 @@
             document.getElementById('noResults').style.display = hasResults ? "none" : "block";
         }
 
-        // KATEGORİLERİ VE VERİLERİ ÇEKME (ORİJİNAL KISIM)
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
