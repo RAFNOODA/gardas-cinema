@@ -19,43 +19,6 @@
             max-width: 100%; 
         }
 
-        /* --- VİP GİRİŞ EKRANI (BARİYER) --- */
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(20, 20, 20, 0.98);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            text-align: center;
-            padding: 20px;
-        }
-        .login-box {
-            background: #111;
-            padding: 40px;
-            border-radius: 12px;
-            border: 2px solid var(--red);
-            max-width: 500px;
-            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
-        }
-        .btn-google {
-            background: #4285F4;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
-            width: 100%;
-        }
-        .btn-google:hover { background: #357ae8; transform: scale(1.05); }
-        /* -------------------------------------- */
-
         .search-container {
             position: sticky;
             top: 0;
@@ -122,25 +85,14 @@
         .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 15px; }
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
-        iframe { width: 100vw; height: 100vh; border: none; background: #000; }
+        /* YENİ VİDEO OYNATICI STİLLERİ */
+        .video-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: #000; }
+        video { width: 100%; max-height: 100vh; outline: none; }
     </style>
 </head>
 <body>
 
-    <!-- GİRİŞ EKRANI (Bariyer) -->
-    <div id="login-screen" style="display: none;">
-        <div class="login-box">
-            <h1 style="color:var(--red); font-size: 32px; margin-top:0;">Gardaş Cinema</h1>
-            <h2 style="color:white; font-size: 18px;">VİP Erişimi</h2>
-            <p style="color:#aaa; line-height: 1.5; margin-bottom: 25px;">
-                Videoları "Kota Doldu" hatası almadan sınırsız izleyebilmek için <b>vgffgg036@gmail.com</b> veya herhangi bir Google hesabıyla giriş yapmanız zorunludur.
-            </p>
-            <button class="btn-google" onclick="googleIleGirisYap()">Google İle Giriş Yap / Onayla</button>
-        </div>
-    </div>
-
-    <!-- SİTENİN ASIL İÇERİĞİ -->
-    <div id="main-content" style="display: none;">
+    <div id="main-content">
         <div class="search-container">
             <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
         </div>
@@ -163,46 +115,40 @@
             </div>
         </div>
 
+        <!-- YENİ HTML5 VİDEO OYNATICI -->
         <div id="playerModal" class="modal">
-            <span class="close" onclick="durdurVideo()">&times;</span>
-            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                <iframe id="googlePlayer" src="" allow="autoplay; fullscreen"></iframe>
+            <span class="close" style="z-index: 1002;" onclick="durdurVideo()">&times;</span>
+            <div class="video-container">
+                <video id="nativePlayer" controls crossorigin="anonymous">
+                    Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
             </div>
         </div>
     </div>
 
     <script>
-        // --- OTURUM KONTROLÜ ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mühür ismini (gardas_vip_v2) olarak değiştirdim, tarayıcın seni unutacak!
-            if (localStorage.getItem('gardas_vip_v2') === 'true') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('main-content').style.display = 'none';
-            }
-        });
-
-        function googleIleGirisYap() {
-            // Yeni mühürü basıyoruz
-            localStorage.setItem('gardas_vip_v2', 'true');
-            
-            alert("BİLGİ: Tamam'a bastığınızda giriş sayfası açılacak.\n\nGiriş yaptıktan sonra Google Drive ekranını gördüğünüzde UYGULAMAYI KAPATIP TEKRAR AÇIN.");
-            window.location.href = "https://accounts.google.com/ServiceLogin?continue=https://drive.google.com";
-        }
-        // -----------------------
+        // Senin Cloudflare Proxy Adresin Buraya Eklendi
+        const WORKER_URL = "https://withered-poetry-11d2.musabhde.workers.dev/";
 
         let globalVeri = null;
 
         function oynat(id) {
-            document.getElementById('googlePlayer').src = `https://drive.google.com/file/d/${id}/preview`;
+            const videoElement = document.getElementById('nativePlayer');
+            
+            // Cloudflare worker adresine Google Drive ID'sini ekliyoruz
+            videoElement.src = `${WORKER_URL}?id=${id}`;
+            
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
+            
+            // Videoyu otomatik başlat
+            videoElement.play();
         }
 
         function durdurVideo() {
-            document.getElementById('googlePlayer').src = '';
+            const videoElement = document.getElementById('nativePlayer');
+            videoElement.pause();
+            videoElement.src = ''; // Videoyu hafızadan temizle, arkada çalmaya devam etmesin
             document.getElementById('playerModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
