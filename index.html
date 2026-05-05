@@ -85,7 +85,7 @@
         .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 15px; }
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
-        /* YENİ VİDEO OYNATICI STİLLERİ */
+        /* HTML5 VİDEO OYNATICI STİLLERİ */
         .video-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: #000; }
         video { width: 100%; max-height: 100vh; outline: none; }
     </style>
@@ -115,11 +115,11 @@
             </div>
         </div>
 
-        <!-- YENİ HTML5 VİDEO OYNATICI -->
+        <!-- HTML5 VİDEO PENCERESİ -->
         <div id="playerModal" class="modal">
             <span class="close" style="z-index: 1002;" onclick="durdurVideo()">&times;</span>
             <div class="video-container">
-                <video id="nativePlayer" controls crossorigin="anonymous">
+                <video id="nativePlayer" controls crossorigin="anonymous" playsinline>
                     Tarayıcınız video oynatmayı desteklemiyor.
                 </video>
             </div>
@@ -127,7 +127,7 @@
     </div>
 
     <script>
-        // Senin Cloudflare Proxy Adresin Buraya Eklendi
+        // Senin Özel Cloudflare Adresin
         const WORKER_URL = "https://withered-poetry-11d2.musabhde.workers.dev/";
 
         let globalVeri = null;
@@ -135,20 +135,22 @@
         function oynat(id) {
             const videoElement = document.getElementById('nativePlayer');
             
-            // Cloudflare worker adresine Google Drive ID'sini ekliyoruz
-            videoElement.src = `${WORKER_URL}?id=${id}`;
+            // Linki Worker adresi ve Drive ID'siyle birleştiriyoruz
+            const proxyLink = `${WORKER_URL}?id=${id}`;
             
+            videoElement.src = proxyLink;
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
             
-            // Videoyu otomatik başlat
-            videoElement.play();
+            // Videoyu yeniden yüklemeye zorlayıp başlatıyoruz
+            videoElement.load();
+            videoElement.play().catch(e => console.log("Otomatik oynatma engellendi, lütfen ekrandaki oynat tuşuna basın."));
         }
 
         function durdurVideo() {
             const videoElement = document.getElementById('nativePlayer');
             videoElement.pause();
-            videoElement.src = ''; // Videoyu hafızadan temizle, arkada çalmaya devam etmesin
+            videoElement.src = ''; // Arka planda çalmasını engelle
             document.getElementById('playerModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
