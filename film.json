@@ -38,6 +38,32 @@
         "Bilim-Kurgu"
       ],
       "id": "1eldize5aq3e"
+    },
+    {
+      "ad": "John Wick: Chapter 2",
+      "puan": "7.3",
+      "oyuncular": "Keanu Reeves, Common, Laurence Fishburne",
+      "konu": "Emekliye ayrılmış olan John Wick can yoldaşı köpeğiyle sakin bir hayat sürmektedir. Ancak başına gelen kimi olaylar onu bir kez daha suç dünyasına iter. Bu kez bu uğurda Roma sokaklarını arşınlaması gerekecektir...",
+      "afis": "https://image.tmdb.org/t/p/w500/1jUrsSAFwYTmsrKHAz9bgpdEVv.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Gerilim",
+        "Suç"
+      ],
+      "id": "bqp2z9ubtxm7"
+    },
+    {
+      "ad": "John Wick: Bölüm 4",
+      "puan": "7.7",
+      "oyuncular": "Keanu Reeves, Donnie Yen, Bill Skarsgård",
+      "konu": "John Wick'in geçmişteki düşmanlarıyla yüzleşmek zorunda kaldığı ve uluslararası bir suikastçı ağına karşı verdiği mücadeleyi konu alır. Bu kez, John Wick, özgürlüğü için savaşırken, eski dostlarının ihanetleriyle de karşılaşır. Wick, çeşitli yerlerde geçen çatışmalarda ustaca dövüş yeteneklerini sergilerken, her sahne heyecan verici bir şekilde kurgulanmıştır. \"John Wick: Bölüm 4\", hem dövüş sanatları tutkunları hem de aksiyon severler için unutulmaz bir deneyim sunmayı hedefliyor.",
+      "afis": "https://image.tmdb.org/t/p/w500/6jS780bEkQRPLEPWvZ0MGQ0EI4j.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Gerilim",
+        "Suç"
+      ],
+      "id": "0q89fjtd468z"
     }
   ],
   "diziler": {}
