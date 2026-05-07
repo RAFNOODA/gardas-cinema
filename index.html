@@ -29,17 +29,18 @@
         .modal-content { width: 95%; max-width: 900px; margin: 20px auto; background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; gap: 20px; position: relative; }
         @media (min-width: 768px) { .modal-content { flex-direction: row; margin: 50px auto; padding: 30px; } }
 
-        .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; color: #fff; z-index: 1001; }
+        .close { position: absolute; top: 10px; right: 15px; font-size: 35px; cursor: pointer; color: #fff; z-index: 1001; text-shadow: 0 0 10px #000; }
         .detay-afis { width: 100%; max-width: 220px; margin: 0 auto; border-radius: 8px; }
         .puan-alani { color: #00d573; font-weight: bold; font-size: 18px; margin: 10px 0; }
-        .btn-izle { background: var(--red); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 10px; }
+        .btn-izle { background: var(--red); color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-izle:hover { background: #b20710; }
         
         .bolum-konteynir { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin-top: 15px; }
         .bolum-item { background: #333; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .bolum-item:hover { background: var(--red); }
 
-        /* Vidmoly Iframe Container */
-        .video-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: #000; }
-        .video-container iframe { width: 100%; height: 100vh; border: none; }
+        .video-container { width:100%; height:100vh; display:flex; align-items:center; justify-content:center; background: #000; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -67,9 +68,8 @@
     </div>
 
     <div id="playerModal" class="modal">
-        <span class="close" style="z-index: 1002;" onclick="durdurVideo()">&times;</span>
-        <div class="video-container" id="playerContainer">
-            </div>
+        <span class="close" style="z-index: 1002; right: 20px; top: 10px;" onclick="durdurVideo()">&times;</span>
+        <div class="video-container" id="playerContainer"></div>
     </div>
 
     <script>
@@ -77,15 +77,23 @@
 
         function oynat(id) {
             const playerContainer = document.getElementById('playerContainer');
-            // Vidmoly embed linkini iframe olarak basıyoruz
-            playerContainer.innerHTML = `<iframe src="https://vidmoly.to/embed-${id}.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen allow="autoplay"></iframe>`;
+            // Siyah ekranı aşmak için en kapsamlı iframe ayarları:
+            playerContainer.innerHTML = `
+                <iframe 
+                    src="https://vidmoly.me/embed-${id}.html" 
+                    frameborder="0" 
+                    allowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    mozallowfullscreen="true"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation"
+                ></iframe>`;
             
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
         }
 
         function durdurVideo() {
-            // İframe'i silerek videoyu arka planda durduruyoruz
             document.getElementById('playerContainer').innerHTML = '';
             document.getElementById('playerModal').style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -145,7 +153,6 @@
             document.getElementById('noResults').style.display = hasResults ? "none" : "block";
         }
 
-        // Verileri Çek ve Kategorilendir
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
@@ -153,24 +160,26 @@
             const root = document.getElementById('root');
             let kategoriler = {"TÜM İÇERİKLER": []};
 
-            // Diziler
-            for (let anahtar in data.diziler) {
-                const d = data.diziler[anahtar];
-                kategoriler["TÜM İÇERİKLER"].push({isDizi: true, key: anahtar, data: d});
-                (d.kategoriler || []).forEach(k => {
-                    if(!kategoriler[k]) kategoriler[k] = [];
-                    kategoriler[k].push({isDizi: true, key: anahtar, data: d});
-                });
+            if(data.diziler) {
+                for (let anahtar in data.diziler) {
+                    const d = data.diziler[anahtar];
+                    kategoriler["TÜM İÇERİKLER"].push({isDizi: true, key: anahtar, data: d});
+                    (d.kategoriler || []).forEach(k => {
+                        if(!kategoriler[k]) kategoriler[k] = [];
+                        kategoriler[k].push({isDizi: true, key: anahtar, data: d});
+                    });
+                }
             }
 
-            // Filmler
-            (data.filmler || []).forEach(f => {
-                kategoriler["TÜM İÇERİKLER"].push({isDizi: false, data: f});
-                (f.kategoriler || []).forEach(k => {
-                    if(!kategoriler[k]) kategoriler[k] = [];
-                    kategoriler[k].push({isDizi: false, data: f});
+            if(data.filmler) {
+                data.filmler.forEach(f => {
+                    kategoriler["TÜM İÇERİKLER"].push({isDizi: false, data: f});
+                    (f.kategoriler || []).forEach(k => {
+                        if(!kategoriler[k]) kategoriler[k] = [];
+                        kategoriler[k].push({isDizi: false, data: f});
+                    });
                 });
-            });
+            }
 
             for (let kat in kategoriler) {
                 let html = `<div class="section-title">${kat}</div><div class="grid">`;
