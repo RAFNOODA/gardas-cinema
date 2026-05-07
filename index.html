@@ -2,115 +2,72 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer-when-downgrade">
-    <title>Gardaş Cinema - Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Gardaş Cinema</title>
     <style>
-        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        
-        .search-container { position: sticky; top: 0; background: rgba(20, 20, 20, 0.95); padding: 15px 0; z-index: 100; backdrop-filter: blur(5px); }
-        .search-input { width: 100%; padding: 15px 20px; background: var(--card-bg); border: 2px solid #333; border-radius: 25px; color: white; outline: none; }
-        .search-input:focus { border-color: var(--red); }
-        
-        .section-title { font-size: 20px; border-left: 4px solid var(--red); padding-left: 12px; margin: 25px 0 15px; text-transform: uppercase; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
-        @media (min-width: 900px) { .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; } }
-        
-        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #333; position: relative; }
-        .card:hover { transform: scale(1.03); border-color: var(--red); }
+        body { background: #141414; color: white; font-family: sans-serif; margin: 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: #1a1a1a; border-radius: 10px; overflow: hidden; cursor: pointer; border: 1px solid #333; }
         .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .badge { position: absolute; top: 6px; right: 6px; background: var(--red); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        .info { padding: 8px; text-align: center; }
-        .info h3 { margin: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+        .info { padding: 10px; text-align: center; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
-        .modal-content { width: 95%; max-width: 900px; margin: 20px auto; background: #1a1a1a; padding: 20px; border-radius: 12px; position: relative; display: flex; flex-direction: column; gap: 20px; }
-        @media (min-width: 768px) { .modal-content { flex-direction: row; margin: 50px auto; } }
-
-        .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; color: #fff; z-index: 1001; }
-        .detay-afis { width: 100%; max-width: 200px; border-radius: 8px; margin: 0 auto; }
-        .btn-izle { background: var(--red); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-
-        .video-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
-        .video-container { width: 100%; height: 100%; }
-        .video-container iframe { width: 100%; height: 100%; border: none; }
+        .modal-content { width: 90%; max-width: 1000px; margin: 50px auto; background: #1a1a1a; padding: 20px; position: relative; border-radius: 15px; }
+        .close { position: absolute; top: 10px; right: 20px; font-size: 40px; cursor: pointer; color: #fff; }
+        
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 8px; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .btn-izle { background: #E50914; color: white; padding: 15px; border: none; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Ara..." onkeyup="icerikAra()">
-    </div>
+    <div id="root" class="grid"></div>
 
-    <div id="root"></div>
-
-    <div id="detayModal" class="modal">
+    <div id="playerModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="kapat('detayModal')">&times;</span>
-            <img id="m-afis" class="detay-afis" src="">
-            <div style="flex: 1;">
-                <h1 id="m-baslik" style="margin:0; color:var(--red);"></h1>
-                <p id="m-puan" style="color:#00d573; font-weight:bold;"></p>
-                <p id="m-ozet" style="color:#ccc; font-size:14px;"></p>
-                <div id="m-kontrol"></div>
-            </div>
+            <span class="close" onclick="durdur()">&times;</span>
+            <div id="videoAlani"></div>
         </div>
     </div>
 
-    <div id="playerModal" class="video-modal">
-        <span class="close" onclick="durdurVideo()">&times;</span>
-        <div class="video-container" id="playerContainer"></div>
-    </div>
-
     <script>
-        let globalVeri = null;
-
         function oynat(id) {
-            const pc = document.getElementById('playerContainer');
-            // Referer korumasını aşmak için link ve allow ayarları güncellendi
-            pc.innerHTML = `<iframe src="https://vidmoly.me/embed-${id}.html" allowfullscreen="true" allow="autoplay; encrypted-media" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>`;
+            const container = document.getElementById('videoAlani');
+            // İŞTE KRİTİK NOKTA: .biz oldu!
+            container.innerHTML = `
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://vidmoly.biz/embed-${id}.html" 
+                        allowfullscreen 
+                        allow="autoplay; encrypted-media" 
+                        referrerpolicy="no-referrer"
+                    ></iframe>
+                </div>`;
             document.getElementById('playerModal').style.display = 'block';
         }
 
-        function durdurVideo() {
-            document.getElementById('playerContainer').innerHTML = '';
+        function durdur() {
+            document.getElementById('videoAlani').innerHTML = '';
             document.getElementById('playerModal').style.display = 'none';
-        }
-
-        function kapat(id) { document.getElementById(id).style.display = 'none'; }
-
-        function detayGoster(item) {
-            document.getElementById('m-baslik').innerText = item.ad;
-            document.getElementById('m-afis').src = item.afis;
-            document.getElementById('m-ozet').innerText = item.konu;
-            document.getElementById('m-puan').innerText = "⭐ TMDB: " + item.puan;
-            document.getElementById('m-kontrol').innerHTML = `<button class="btn-izle" onclick="oynat('${item.id}')">HEMEN İZLE</button>`;
-            document.getElementById('detayModal').style.display = 'block';
-        }
-
-        function icerikAra() {
-            let s = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.card').forEach(c => {
-                c.style.display = c.innerText.toLowerCase().includes(s) ? "" : "none";
-            });
         }
 
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
-            globalVeri = data;
             const root = document.getElementById('root');
-            let html = '<div class="section-title">Kütüphane</div><div class="grid">';
             data.filmler.forEach(f => {
-                html += `
-                <div class="card" onclick='detayGoster(${JSON.stringify(f).replace(/'/g, "")})'>
-                    <img src="${f.afis}">
-                    <div class="info"><h3>${f.ad}</h3></div>
-                </div>`;
+                root.innerHTML += `
+                    <div class="card" onclick="oynat('${f.id}')">
+                        <img src="${f.afis}">
+                        <div class="info">
+                            <h3>${f.ad}</h3>
+                            <button class="btn-izle">İZLE</button>
+                        </div>
+                    </div>`;
             });
-            root.innerHTML = html + '</div>';
         });
     </script>
 </body>
