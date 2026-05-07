@@ -1,4 +1,18 @@
 {
-  "filmler": [],
+  "filmler": [
+    {
+      "ad": "Ballerina",
+      "puan": "7.2",
+      "oyuncular": "Ana de Armas, Keanu Reeves, Ian McShane",
+      "konu": "John Wick: Bölüm 3 - Parabellum olaylarının geçtiği zaman diliminde yer alan Ballerina, Ruska Roma'nın suikastçı geleneklerinde eğitimine başlayan Eve Macarro'nun hikayesini anlatıyor.",
+      "afis": "https://image.tmdb.org/t/p/w500/2VUmvqsHb6cEtdfscEA6fqqVzLg.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Gerilim",
+        "Suç"
+      ],
+      "id": "lyl2zll5cu8a"
+    }
+  ],
   "diziler": {}
 }
