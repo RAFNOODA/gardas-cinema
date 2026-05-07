@@ -81,7 +81,6 @@
     <script>
         let globalVeri = null;
 
-        // VİDMOLY'İ ÇALIŞTIRAN O SİHİRLİ FONKSİYON
         function oynat(id) {
             const playerContainer = document.getElementById('playerContainer');
             playerContainer.innerHTML = `
@@ -92,7 +91,6 @@
                     referrerpolicy="no-referrer"
                 ></iframe>`;
             
-            // Detay ekranını kapat, videoyu aç
             document.getElementById('detayModal').style.display = 'none';
             document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
@@ -109,7 +107,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // KARTIN ÜSTÜNE TIKLAYINCA ÇIKAN BİLGİ EKRANI
         function detayGoster(item) {
             document.getElementById('m-baslik').innerText = item.ad;
             document.getElementById('m-afis').src = item.afis || 'https://via.placeholder.com/500x750?text=Afis+Yok';
@@ -123,7 +120,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ARAMA ÇUBUĞU FONKSİYONU
         function icerikAra() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let cards = document.getElementsByClassName('card');
@@ -145,17 +141,21 @@
             document.getElementById('noResults').style.display = hasResults ? "none" : "block";
         }
 
-        // JSON'DAN VERİYİ ÇEKİP KATEGORİLERE (Aksiyon, Dram vs.) AYIRAN SİSTEM
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
             globalVeri = data;
             const root = document.getElementById('root');
-            let kategoriler = {};
+            
+            // "TÜM İÇERİKLER" kategorisini baştan tanımlıyoruz ki en üste o gelsin
+            let kategoriler = {"TÜM İÇERİKLER": []};
 
             if(data.filmler) {
                 data.filmler.forEach(f => {
-                    // Eğer kategorisi yoksa "Diğer" bölümüne at
+                    // Her filmi koşulsuz şartsız TÜM İÇERİKLER listesine atıyoruz
+                    kategoriler["TÜM İÇERİKLER"].push(f);
+
+                    // Filmi kendi türlerine de atıyoruz (Aksiyon, Dram vb.)
                     let kats = f.kategoriler && f.kategoriler.length > 0 ? f.kategoriler : ["Diğer"];
                     kats.forEach(k => {
                         if(!kategoriler[k]) kategoriler[k] = [];
@@ -164,11 +164,9 @@
                 });
             }
 
-            // Sayfaya bas
             for (let kat in kategoriler) {
                 let html = `<div class="section-title">${kat}</div><div class="grid">`;
                 kategoriler[kat].forEach(f => {
-                    // Tırnak işaretleri kodu bozmasın diye temizliyoruz
                     const veriStr = JSON.stringify(f).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
                     html += `
                         <div class="card" onclick='detayGoster(${veriStr})'>
