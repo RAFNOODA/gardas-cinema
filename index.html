@@ -2,72 +2,182 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>Gardaş Cinema</title>
+    <title>Gardaş Cinema - Premium</title>
     <style>
-        body { background: #141414; color: white; font-family: sans-serif; margin: 0; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: #1a1a1a; border-radius: 10px; overflow: hidden; cursor: pointer; border: 1px solid #333; }
-        .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-        .info { padding: 10px; text-align: center; }
+        :root { --red: #E50914; --bg: #141414; --card-bg: #1a1a1a; }
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0 auto; padding: 10px; overflow-x: hidden; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
-        .modal-content { width: 90%; max-width: 1000px; margin: 50px auto; background: #1a1a1a; padding: 20px; position: relative; border-radius: 15px; }
-        .close { position: absolute; top: 10px; right: 20px; font-size: 40px; cursor: pointer; color: #fff; }
+        /* ARAMA ÇUBUĞU */
+        .search-container { position: sticky; top: 0; background: rgba(20, 20, 20, 0.95); padding: 15px 0; z-index: 100; margin-bottom: 20px; backdrop-filter: blur(5px); }
+        .search-input { width: 100%; padding: 15px 20px; font-size: 16px; background: var(--card-bg); border: 2px solid #333; border-radius: 25px; color: white; outline: none; transition: 0.3s; }
+        .search-input:focus { border-color: var(--red); box-shadow: 0 0 15px rgba(229, 9, 20, 0.3); }
         
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 8px; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        /* KATEGORİLER VE KARTLAR */
+        .section-title { font-size: 20px; border-left: 4px solid var(--red); padding-left: 12px; margin: 25px 0 15px; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; padding: 0 10px; } }
         
-        .btn-izle { background: #E50914; color: white; padding: 15px; border: none; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
+        .card { background: var(--card-bg); border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #333; position: relative; width: 100%; }
+        .card:hover { transform: scale(1.03); border-color: var(--red); }
+        .card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #333; display: block; }
+        .badge { position: absolute; top: 6px; right: 6px; background: var(--red); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 5; }
+        .info { padding: 8px; text-align: center; }
+        .info h3 { margin: 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* DETAY MODALI */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
+        .modal-content { width: 95%; max-width: 900px; margin: 20px auto; background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; gap: 20px; position: relative; }
+        @media (min-width: 768px) { .modal-content { flex-direction: row; margin: 50px auto; padding: 30px; } }
+
+        .close { position: absolute; top: 10px; right: 15px; font-size: 35px; cursor: pointer; color: #fff; z-index: 1001; text-shadow: 0 0 10px #000; }
+        .close:hover { color: var(--red); }
+        
+        .detay-afis { width: 100%; max-width: 220px; margin: 0 auto; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .puan-alani { color: #00d573; font-weight: bold; font-size: 18px; margin: 10px 0; }
+        .kadro-text { color: #aaa; font-size: 14px; margin-bottom: 10px; }
+        .kadro-text b { color: #fff; }
+        
+        .btn-izle { background: var(--red); color: white; padding: 15px 30px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
+        .btn-izle:hover { background: #b20710; transform: scale(1.02); }
+
+        /* VİDEO MODALI */
+        .video-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
+        .video-container { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="root" class="grid"></div>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Film veya dizi ara..." onkeyup="icerikAra()">
+    </div>
 
-    <div id="playerModal" class="modal">
+    <div id="noResults" style="display:none; text-align:center; padding:40px; color:#888;">Aradığın içerik bulunamadı.</div>
+    <div id="root"></div>
+
+    <div id="detayModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="durdur()">&times;</span>
-            <div id="videoAlani"></div>
+            <span class="close" onclick="kapat('detayModal')">&times;</span>
+            <img id="m-afis" class="detay-afis" src="">
+            <div style="flex: 1;">
+                <h1 id="m-baslik" style="margin:0; color:var(--red); font-size: 28px; text-transform: uppercase;"></h1>
+                <div id="m-puan" class="puan-alani"></div>
+                <div class="kadro-text"><b>Oyuncular:</b> <span id="m-kadro"></span></div>
+                <p id="m-ozet" style="line-height:1.6; color:#ddd; font-size: 15px; margin-top: 15px;"></p>
+                <div id="m-kontrol"></div>
+            </div>
         </div>
     </div>
 
+    <div id="playerModal" class="video-modal">
+        <span class="close" style="z-index: 2001; right: 20px; top: 15px;" onclick="durdurVideo()">&times;</span>
+        <div class="video-container" id="playerContainer"></div>
+    </div>
+
     <script>
+        let globalVeri = null;
+
+        // VİDMOLY'İ ÇALIŞTIRAN O SİHİRLİ FONKSİYON
         function oynat(id) {
-            const container = document.getElementById('videoAlani');
-            // İŞTE KRİTİK NOKTA: .biz oldu!
-            container.innerHTML = `
-                <div class="video-wrapper">
-                    <iframe 
-                        src="https://vidmoly.biz/embed-${id}.html" 
-                        allowfullscreen 
-                        allow="autoplay; encrypted-media" 
-                        referrerpolicy="no-referrer"
-                    ></iframe>
-                </div>`;
+            const playerContainer = document.getElementById('playerContainer');
+            playerContainer.innerHTML = `
+                <iframe 
+                    src="https://vidmoly.biz/embed-${id}.html" 
+                    allowfullscreen 
+                    allow="autoplay; encrypted-media" 
+                    referrerpolicy="no-referrer"
+                ></iframe>`;
+            
+            // Detay ekranını kapat, videoyu aç
+            document.getElementById('detayModal').style.display = 'none';
             document.getElementById('playerModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; 
         }
 
-        function durdur() {
-            document.getElementById('videoAlani').innerHTML = '';
+        function durdurVideo() {
+            document.getElementById('playerContainer').innerHTML = '';
             document.getElementById('playerModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
+        function kapat(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            document.body.style.overflow = 'auto';
+        }
+
+        // KARTIN ÜSTÜNE TIKLAYINCA ÇIKAN BİLGİ EKRANI
+        function detayGoster(item) {
+            document.getElementById('m-baslik').innerText = item.ad;
+            document.getElementById('m-afis').src = item.afis || 'https://via.placeholder.com/500x750?text=Afis+Yok';
+            document.getElementById('m-ozet').innerText = item.konu || "Bu içerik için özet bulunamadı.";
+            document.getElementById('m-puan').innerHTML = `⭐ TMDB Puanı: ${item.puan || '0.0'}`;
+            document.getElementById('m-kadro').innerText = item.oyuncular || "Bilinmiyor";
+            
+            document.getElementById('m-kontrol').innerHTML = `<button class="btn-izle" onclick="oynat('${item.id}')">HEMEN İZLE</button>`;
+            
+            document.getElementById('detayModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ARAMA ÇUBUĞU FONKSİYONU
+        function icerikAra() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+            let sections = document.getElementsByClassName('section-title');
+            let grids = document.getElementsByClassName('grid');
+            let hasResults = false;
+
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].querySelector('h3').innerText.toLowerCase();
+                if (title.includes(input)) { cards[i].style.display = ""; hasResults = true; } 
+                else { cards[i].style.display = "none"; }
+            }
+
+            for (let i = 0; i < grids.length; i++) {
+                let visibleCards = grids[i].querySelectorAll('.card[style=""]').length;
+                if (visibleCards === 0) { sections[i].style.display = "none"; grids[i].style.display = "none"; } 
+                else { sections[i].style.display = "block"; grids[i].style.display = "grid"; }
+            }
+            document.getElementById('noResults').style.display = hasResults ? "none" : "block";
+        }
+
+        // JSON'DAN VERİYİ ÇEKİP KATEGORİLERE (Aksiyon, Dram vs.) AYIRAN SİSTEM
         fetch('film.json?v=' + Date.now())
         .then(res => res.json())
         .then(data => {
+            globalVeri = data;
             const root = document.getElementById('root');
-            data.filmler.forEach(f => {
-                root.innerHTML += `
-                    <div class="card" onclick="oynat('${f.id}')">
-                        <img src="${f.afis}">
-                        <div class="info">
-                            <h3>${f.ad}</h3>
-                            <button class="btn-izle">İZLE</button>
-                        </div>
-                    </div>`;
-            });
+            let kategoriler = {};
+
+            if(data.filmler) {
+                data.filmler.forEach(f => {
+                    // Eğer kategorisi yoksa "Diğer" bölümüne at
+                    let kats = f.kategoriler && f.kategoriler.length > 0 ? f.kategoriler : ["Diğer"];
+                    kats.forEach(k => {
+                        if(!kategoriler[k]) kategoriler[k] = [];
+                        kategoriler[k].push(f);
+                    });
+                });
+            }
+
+            // Sayfaya bas
+            for (let kat in kategoriler) {
+                let html = `<div class="section-title">${kat}</div><div class="grid">`;
+                kategoriler[kat].forEach(f => {
+                    // Tırnak işaretleri kodu bozmasın diye temizliyoruz
+                    const veriStr = JSON.stringify(f).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                    html += `
+                        <div class="card" onclick='detayGoster(${veriStr})'>
+                            <img src="${f.afis || 'https://via.placeholder.com/190x280?text=Afiş+Yok'}" onerror="this.src='https://via.placeholder.com/190x280?text=Afiş+Yok'">
+                            <div class="info"><h3>${f.ad}</h3></div>
+                        </div>`;
+                });
+                root.innerHTML += html + `</div>`;
+            }
         });
     </script>
 </body>
