@@ -1,106 +1,106 @@
-import json, re, urllib.request, urllib.parse, os
+import requests
+import json
+import os
+import re
 
-# --- AYARLARIN ---
-DRIVE_API_KEY = "AIzaSyAIezbRGTLiIZLfJFOS292lnKIwKqOT3Q0"
-KLASOR_ID = "1iA-tbMeSOs-eiD_-bzV2P8ba2fBNabxf"
+# ================= AYARLAR =================
+# İstediğin API anahtarları buraya işlendi
+VIDMOLY_API_KEY = "619236ku6lthluftwfvwfz"
 TMDB_API_KEY = "3fd2be6f0c70a2a598f084ddfb75487c"
-# HATA BURADAYDI, ARTIK DİREKT BULUNDUĞU KLASÖRE KAYDEDECEK
-JSON_FILE = "film.json" 
+JSON_DOSYASI = "film.json"
+# ===========================================
 
-def temiz_isim(ham_ad):
-    t = ham_ad.lower()
-    t = re.sub(r'\.(mp4|mkv|avi|mov|json|py|html|png|jpg)$', '', t)
-    t = re.sub(r'\(.*?\)|\[.*?\]', '', t)
-    copler = ['1080p', '720p', 'x264', 'x265', 'bluray', 'hdtv', 'türkçe', 'dublaj', 'altyazılı', 'hd', 'izle', 'full', 'movie']
-    for c in copler: t = t.replace(c, '')
-    return t.strip().title()
+def ismi_temizle(dosya_adi):
+    # Dosya adındaki teknik terimleri temizler (Matrix.1080p.mp4 -> Matrix)
+    sil = r'(1080p|720p|480p|mkv|mp4|avi|x264|bluray|webrip|tr|dublaj|altyazılı|full|izle)'
+    temiz = re.sub(sil, '', dosya_adi, flags=re.IGNORECASE)
+    temiz = temiz.replace('.', ' ').replace('-', ' ').replace('_', ' ')
+    temiz = re.sub(r'\(.*?\)', '', temiz)
+    return temiz.strip()
 
-def tmdb_sorgula(isim, tip="movie"):
-    """Puan ve Kadro için derinlemesine sorgu yapar"""
-    encoded_name = urllib.parse.quote(isim)
-    search_url = f"https://api.themoviedb.org/3/search/{tip}?api_key={TMDB_API_KEY}&query={encoded_name}&language=tr-TR"
+def tmdb_bilgi_cek(film_adi):
+    temiz_ad = ismi_temizle(film_adi)
+    print(f"🔍 TMDB'de Aranan: {temiz_ad}")
+    
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={TMDB_API_KEY}&query={temiz_ad}&language=tr-TR"
     
     try:
-        req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=10) as res:
-            veri = json.loads(res.read().decode())
-            if not veri.get('results'): return None
+        res = requests.get(url, timeout=10).json()
+        if res.get('results') and len(res['results']) > 0:
+            f_id = res['results'][0]['id']
+            # Detaylar ve Oyuncular için derin sorgu
+            d_url = f"https://api.themoviedb.org/3/movie/{f_id}?api_key={TMDB_API_KEY}&append_to_response=credits&language=tr-TR"
+            d = requests.get(d_url, timeout=10).json()
             
-            f = veri['results'][0]
-            tmdb_id = f['id']
-            
-            # append_to_response ile tek seferde oyuncuları ve detayları al
-            detay_url = f"https://api.themoviedb.org/3/{tip}/{tmdb_id}?api_key={TMDB_API_KEY}&language=tr-TR&append_to_response=credits"
-            
-            with urllib.request.urlopen(detay_url, timeout=10) as d_res:
-                d_veri = json.loads(d_res.read().decode())
-                cast = d_veri.get('credits', {}).get('cast', [])
-                
-                return {
-                    "ad": d_veri.get('name') if tip == "tv" else d_veri.get('title'),
-                    "afis": f"https://image.tmdb.org/t/p/w500{d_veri['poster_path']}" if d_veri.get('poster_path') else None,
-                    "konu": d_veri.get('overview') or "Açıklama bulunamadı.",
-                    "kategoriler": [g['name'] for g in d_veri.get('genres', [])] or ["Genel"],
-                    "puan": str(round(d_veri.get('vote_average', 0.0), 1)),
-                    "oyuncular": ", ".join([o['name'] for o in cast[:5]]) if cast else "Bilinmiyor"
-                }
-    except: return None
-
-def calistir():
-    query = urllib.parse.quote(f"'{KLASOR_ID}' in parents and trashed = false")
-    drive_url = f"https://www.googleapis.com/drive/v3/files?q={query}&key={DRIVE_API_KEY}&fields=files(id,name)"
-    
-    try:
-        with urllib.request.urlopen(drive_url) as res:
-            dosyalar = json.loads(res.read().decode()).get('files', [])
-        
-        arsiv = {"filmler": [], "diziler": {}}
-        for d in dosyalar:
-            if d['name'].lower().endswith(('.json', '.py', '.html', '.txt')): continue
-            m = re.search(r'(.*?)[. ]?s(\d+)e(\d+)', d['name'], re.IGNORECASE)
-            
-            if m:
-                ham_ad = temiz_isim(m.group(1)); s, e = int(m.group(2)), int(m.group(3))
-                if ham_ad not in arsiv["diziler"]:
-                    info = tmdb_sorgula(ham_ad, "tv")
-                    arsiv["diziler"][ham_ad] = {
-                        "ad": info['ad'] if info else ham_ad, "afis": info['afis'] if info else None,
-                        "konu": info['konu'] if info else "Açıklama yok.",
-                        "puan": info['puan'] if info else "0.0", "oyuncular": info['oyuncular'] if info else "Bilinmiyor",
-                        "kategoriler": info['kategoriler'] if info else ["Dizi"], "sezonlar": {}
-                    }
-                if s not in arsiv["diziler"][ham_ad]["sezonlar"]: arsiv["diziler"][ham_ad]["sezonlar"][s] = []
-                arsiv["diziler"][ham_ad]["sezonlar"][s].append({"bolum": e, "id": d['id']})
-                print(f"🎬 {ham_ad} - Puan: {arsiv['diziler'][ham_ad]['puan']}")
-            else:
-                film_ad = temiz_isim(d['name'])
-                info = tmdb_sorgula(film_ad, "movie") or tmdb_sorgula(film_ad, "tv")
-                puan_verisi = info['puan'] if info else "0.0"
-                arsiv["filmler"].append({
-                    "id": d['id'], "ad": info['ad'] if info else film_ad,
-                    "afis": info['afis'] if info else None, "konu": info['konu'] if info else "Açıklama yok.",
-                    "puan": puan_verisi, "oyuncular": info['oyuncular'] if info else "Bilinmiyor",
-                    "kategoriler": info['kategoriler'] if info else ["Film"]
-                })
-                print(f"🎥 {film_ad} - Puan: {puan_verisi}")
-
-        with open(JSON_FILE, 'w', encoding='utf-8') as f:
-            json.dump(arsiv, f, ensure_ascii=False, indent=4)
-        print(f"✅ JSON Mühürlendi: {JSON_FILE}")
-    except Exception as e: print(f"❌ Hata: {e}")
-
-import subprocess
-
-def githuba_firlat():
-    try:
-        print("🚀 Kütüphane GitHub'a yükleniyor...")
-        subprocess.run(["git", "add", "film.json"], check=True)
-        subprocess.run(["git", "commit", "-m", "Kütüphane güncellendi"], check=True)
-        subprocess.run(["git", "push", "origin", "main"], check=True)
-        print("✅ Başarılı! Tüm cihazlar güncellendi.")
+            afis_yolu = d.get('poster_path')
+            return {
+                "ad": d.get('title', temiz_ad),
+                "puan": str(round(d.get('vote_average', 0), 1)),
+                "oyuncular": ", ".join([c['name'] for c in d.get('credits', {}).get('cast', [])[:3]]),
+                "konu": d.get('overview', 'Özet bulunamadı.'),
+                "afis": f"https://image.tmdb.org/t/p/w500{afis_yolu}" if afis_yolu else "https://via.placeholder.com/500x750?text=Afis+Yok",
+                "kategoriler": [g['name'] for g in d.get('genres', [])]
+            }
     except Exception as e:
-        print(f"❌ GitHub bağlantı hatası: {e}")
+        print(f"⚠️ TMDB Hatası: {e}")
+    return None
+
+def main():
+    print("🚀 Vidmoly Kütüphanesi taranıyor...")
+    # Tarayıcıda çalışan .me uzantısını kullanıyoruz
+    vid_url = f"https://vidmoly.me/api/file/list?key={VIDMOLY_API_KEY}"
+    
+    try:
+        response = requests.get(vid_url, timeout=15)
+        vid_res = response.json()
+    except Exception as e:
+        print(f"❌ Vidmoly Bağlantı Hatası: {e}")
+        return
+
+    if vid_res.get('status') == 200:
+        # Mevcut JSON'u yükle veya yeni oluştur
+        if os.path.exists(JSON_DOSYASI):
+            with open(JSON_DOSYASI, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                except:
+                    data = {"filmler": [], "diziler": {}}
+        else:
+            data = {"filmler": [], "diziler": {}}
+
+        mevcut_idler = [f['id'] for f in data.get('filmler', [])]
+        dosyalar = vid_res.get('result', {}).get('files', [])
+        
+        if not dosyalar:
+            print("✅ API Başarılı! Ancak Vidmoly hesabında henüz video yok.")
+            return
+
+        eklenen = 0
+        for file in dosyalar:
+            fid = file['file_code']
+            fname = file['title']
+            
+            if fid not in mevcut_idler:
+                print("-" * 30)
+                print(f"🆕 Yeni Dosya: {fname}")
+                detay = tmdb_bilgi_cek(fname)
+                
+                if detay:
+                    detay["id"] = fid
+                    data['filmler'].append(detay)
+                    eklenen += 1
+                    print(f"✅ Eklendi: {detay['ad']}")
+                else:
+                    print(f"⚠️ {fname} TMDB'de bulunamadı, atlanıyor.")
+
+        if eklenen > 0:
+            with open(JSON_DOSYASI, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f"\n✨ İşlem Tamam! {eklenen} yeni film JSON'a işlendi.")
+        else:
+            print("\n😎 Tüm içerikler güncel, yeni bir şey yok.")
+    else:
+        print(f"❌ Vidmoly Hatası: {vid_res.get('msg', 'Bilinmeyen Hata')}")
 
 if __name__ == "__main__":
-    calistir() 
-    githuba_firlat()
+    main()
