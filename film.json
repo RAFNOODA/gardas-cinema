@@ -154,6 +154,70 @@
         "Suç"
       ],
       "id": "y9bot36qjq04"
+    },
+    {
+      "ad": "Hayalimdeki Düğün",
+      "puan": "6.2",
+      "oyuncular": "Jennifer Lopez, Josh Duhamel, Lenny Kravitz",
+      "konu": "Genç bir çift olan Darcy ve Tom evlenmeye karar verir. Bu onların dışarıdan oldukça sevecen gözüken ancak oldukça inatçı olan ailelerinin de bir araya gelmesi demektir. Bu durum kutlama için tehlike oluşturacak olsa da onları bekleyen tek sorun bu değildir. Düğünde konuklardan biri rehin alınınca işler iyice karışır. Sevdiklerini korumak için ellerinden geleni yapan çiftin ilişkisi de bu süreçte sınanır.",
+      "afis": "https://image.tmdb.org/t/p/w500/2vvzzw1PaPTXoUDmMIhMFrlghWv.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Komedi",
+        "Romantik"
+      ],
+      "id": "kqf582hra32y"
+    },
+    {
+      "ad": "Ölüler Ordusu",
+      "puan": "6.2",
+      "oyuncular": "Dave Bautista, Ella Purnell, Omari Hardwick",
+      "konu": "Las Vegas'ta bir zombi salgınının başlamasının ardından bir grup paralı asker, benzeri görülmemiş büyüklükte bir soygun gerçekleştirmek için karantina bölgesine girer.",
+      "afis": "https://image.tmdb.org/t/p/w500/cg2YM5QL6yOa4qR9UV9RTLlOHWn.jpg",
+      "kategoriler": [
+        "Suç",
+        "Aksiyon",
+        "Korku"
+      ],
+      "id": "yuzowm7lj9bs"
+    },
+    {
+      "ad": "Kuzeyli",
+      "puan": "7.0",
+      "oyuncular": "Alexander Skarsgård, Nicole Kidman, Claes Bang",
+      "konu": "10. yüzyıl İzlanda’sında geçen ve İskandinav efsanelerinden uyarlanan film, babasını öldüren, annesini ise kaçıran amcasından intikam almaya kararlı olan bir Viking prensinin hikâyesini anlatıyor.",
+      "afis": "https://image.tmdb.org/t/p/w500/gOm1SSEfRBXtKfn5DjA0OPDJFiO.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Macera",
+        "Fantastik"
+      ],
+      "id": "7x3a5pi77bwc"
+    },
+    {
+      "ad": "1917",
+      "puan": "8.0",
+      "oyuncular": "George MacKay, Dean-Charles Chapman, Mark Strong",
+      "konu": "1917, I. Dünya Savaşı'nın doruk noktasında, kendilerine imkânsıza yakın bir görev verilen iki İngiliz asker Kıdemsiz Onbaşı Schofield ve Kıdemsiz Onbaşı Blake'in hikâyesini anlatıyor. Blake'in abisinin de içinde bulunduğu 1.600 asker bir tuzağa doğru ilerlemektedir. Askerlerin hayatlarını kurtaracak mesajı düşman bölgesini geçip tabura ulaştırmak için Schofield ve Blake zamanla yarışacaktır.",
+      "afis": "https://image.tmdb.org/t/p/w500/cTzIxbvk3zcvN2X4PLaEdnRkPvh.jpg",
+      "kategoriler": [
+        "Savaş",
+        "Tarih",
+        "Dram"
+      ],
+      "id": "euaisyjjdzes"
+    },
+    {
+      "ad": "Year 10",
+      "puan": "5.7",
+      "oyuncular": "Toby Goodger, Duncan Lacroix, Hannah Khalique-Brown",
+      "konu": "",
+      "afis": "https://image.tmdb.org/t/p/w500/zqeFM6cjHjYmgjqJExjt1NPBPdd.jpg",
+      "kategoriler": [
+        "Korku",
+        "Bilim-Kurgu"
+      ],
+      "id": "dqgsgli769gg"
     }
   ],
   "diziler": {}
