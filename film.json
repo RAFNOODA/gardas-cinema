@@ -218,6 +218,43 @@
         "Bilim-Kurgu"
       ],
       "id": "dqgsgli769gg"
+    },
+    {
+      "ad": "Müttefik",
+      "puan": "6.8",
+      "oyuncular": "Brad Pitt, Marion Cotillard, Jared Harris",
+      "konu": "İkinci Dünya Savaşı sırasında kendi ülkeleri hesabına tetikçilik yapan Amerikalı Max Vatan ile Fransız Marianne Beausejour'un  1942'deki bir görevleri sırasında yolları kesişir. İkisi de Casablanca'daki Nazi Alman elçiyi öldürmek üzere görevlendirilmiştir. Ancak bu görev sırasında birbirlerine aşık olurlar ve sonrasında evlenirler. Ancak evlenmiş olmalarına rağmen birbirlerinden sakladıkları birçok sır vardır ve bu aralarındaki sevgiyle birlikte hissedilir bir gerilimin de ortaya çıkmasına neden olacaktır.",
+      "afis": "https://image.tmdb.org/t/p/w500/uFMDzLTgOioq7SC7EbR99KVMAl2.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Dram",
+        "Savaş",
+        "Romantik",
+        "Gerilim"
+      ],
+      "id": "d3fd5y2408mr"
+    },
+    {
+      "ad": "Umudunu Kaybetme",
+      "puan": "7.9",
+      "oyuncular": "Will Smith, Jaden Smith, Thandiwe Newton",
+      "konu": "Umudunu Kaybetme’de, Chris Gardner iki yakasını bir araya getirmeye çalışan bir aile babasıdır. Ailesini ayakta tutmak için cesurca çabalamasına rağmen beş yaşındaki oğlu Christopher’ın annesi, maddi zorlukların yarattığı sürekli baskı altında direncini kaybetmek üzeredir. Artık dayanamayacağını anlayınca istemeye istemeye evi terk eder. Artık bekar bir baba olan Chris, yılmadan, bildiği tüm satış becerilerini kullanarak daha iyi kazandıran bir işin peşine düşer. Prestijli bir borsa şirketinde stajyerlik bulur ve ücret almasa da programın sonunda iş ve parlak bir gelecek elde edeceğini umarak kabul eder. Parasal güvencesi olmayan Chris ve oğlu, kısa süre sonra oturdukları daireden çıkartılırlar ve düşkünler evi, otobüs durağı, tuvalet; geceyi geçirmek için bulabildikleri her yerde kalırlar.",
+      "afis": "https://image.tmdb.org/t/p/w500/39jT9HTTmWUSzDsPBhztN9k6lum.jpg",
+      "kategoriler": [
+        "Dram"
+      ],
+      "id": "cr61zxhpzili"
+    },
+    {
+      "ad": "Uçurtma Avcısı",
+      "puan": "7.3",
+      "oyuncular": "Ahmad Khan Mahmoodzada, Atossa Leoni, Khalid Abdalla",
+      "konu": "Afgan yazar Khaled Hosseini’nin aynı adlı çok satan romanından uyarlanan The Kite Runner’da, uzun yıllardır Kaliforniya’da yaşayan Amir adlı bir Afgan göçmenin, çocukluk arkadaşı Hassan’ın oğlunun başının dertte olduğunu öğrenmesinin ardından ona yardım etmek için Taliban yönetimi altındaki anavatanına geri dönüşünün öyküsü anlatılır.",
+      "afis": "https://image.tmdb.org/t/p/w500/cNmUl6k6lDVlQhiGts8ZLdsptIp.jpg",
+      "kategoriler": [
+        "Dram"
+      ],
+      "id": "chrclvwwasa6"
     }
   ],
   "diziler": {}
