@@ -255,6 +255,57 @@
         "Dram"
       ],
       "id": "chrclvwwasa6"
+    },
+    {
+      "ad": "Pardon",
+      "puan": "7.4",
+      "oyuncular": "Ferhan Şensoy, Rasim Öztekin, Ali Çatalbaş",
+      "konu": "Üç yakın arkadaşın hayatları, içlerinden biri yüzünden tamamen değişecektir. Her zamanki gibi akıp giden günler artık hiçbir zaman eskisi gibi olmayacaktır. Vaktinden çok sonra askerliğini yapan İbrahim nerede bir resmi kıyafet görse hemen oradan kaçar olmuştur. Sadece masum bir korku gibi gözüken bu korkusu yüzünden sevdiği arkadaşları ve kendisinin başına gelmeyen kalmaz. Arkadaşlarıyla beraber kendini mahkeme salonlarından, hapishaneye kadar uzanan bir yolculukta bulur. Neler olup bittiğini anlamadan cezaevine düşen, üç arkadaşın akılları hep dışarıdadır. Ancak geride kalanlar yavaş yavaş kendi yollarını çizmektedir.",
+      "afis": "https://image.tmdb.org/t/p/w500/v3LwfqjYcjGYVZq1HA7iFNZh5sZ.jpg",
+      "kategoriler": [
+        "Komedi",
+        "Dram"
+      ],
+      "id": "ggtr5b4ftu13"
+    },
+    {
+      "ad": "Chupa",
+      "puan": "6.3",
+      "oyuncular": "Evan Whitten, Demián Bichir, Christian Slater",
+      "konu": "Genç Alex, ailesini ziyaret etmek için Meksika’ya gider. Burada büyükbabasının kulübesinde gizlenmiş genç efsanevi bir yaratık keşfeder. Kısa süre içerinde ikisi arasında beklenmedik bir arkadaşlık oluşur. Efsanevi yaratığı kurtarmak için Alex ve kuzenleri ömür boyu sürecek bir maceraya atılır.",
+      "afis": "https://image.tmdb.org/t/p/w500/ra3xm8KFAkwK0CdbPRkfYADJYTB.jpg",
+      "kategoriler": [
+        "Macera",
+        "Fantastik",
+        "Aile"
+      ],
+      "id": "vatcicixl9rn"
+    },
+    {
+      "ad": "Çılgın İkili 2",
+      "puan": "6.7",
+      "oyuncular": "Martin Lawrence, Will Smith, Jordi Mollà",
+      "konu": "Narkotik dedektifleri Mike Lowrey ve Marcus Burnett, Miami’deki uyuşturucu trafiğini araştırmak üzere görevlendirilirler. İkilinin araştırması onları şehrin uyuşturucu trafiğini kontrol etmek isteyen ve bu nedenle kanlı bir çete savaşı başlatan Johnny Tapia’ya götürür. Bu arada Mike’ın, Marcus’un kız kardeşi Syd’e ilgi duymaya başlaması, bu ikilinin arkadaşlığını ve iş ilişkilerini tehdit etmeye başlar. Eğer özel hayatlarıyla profesyonel hayatlarını birbirinden ayıramazlarsa hem üzerinde çalıştıkları davayı hem de Syd’in hayatını tehlikeye atacaklardır.",
+      "afis": "https://image.tmdb.org/t/p/w500/vowKequv08ONN3n38RzAu8FhlfR.jpg",
+      "kategoriler": [
+        "Aksiyon",
+        "Suç",
+        "Komedi"
+      ],
+      "id": "gx0ynhvvgfzd"
+    },
+    {
+      "ad": "Sherlock Holmes",
+      "puan": "7.2",
+      "oyuncular": "Robert Downey Jr., Jude Law, Rachel McAdams",
+      "konu": "Holmes ve cesur ortağı Watson, birbirinden tehlikeli maceralara gözlerini karartıp dalıyorlar. Dövüş tekniklerini, efsanevi zekası gibi silah olarak kullanan Holmes, bu serüvende ülkesini tahrip edebilecek ölümcül bir komployu aydınlatmak için yeni bir düşman ile savaşmak zorundadır.",
+      "afis": "https://image.tmdb.org/t/p/w500/momkKuWburNTqKBF6ez7rvhYVhE.jpg",
+      "kategoriler": [
+        "Macera",
+        "Suç",
+        "Gizem"
+      ],
+      "id": "x1iummbpmcab"
     }
   ],
   "diziler": {}
